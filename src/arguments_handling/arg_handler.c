@@ -18,42 +18,66 @@ void ArgsHandler_destroy(ArgsHandler * self) {
   free(self);
 }
 
+/*
+  returns 1 if it find at least an arg, 0 if not and -1 if there
+  is an error
+*/
+
 int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
  
-  int found = FALSE;
+  int retval = 0;
   // argv[0] is the program name
-  for (int i = 1; i < argc; i++) {
+  for (int i = 1; i < argc && retval != -1; i++) {
 
-    for (int j = 0; j < self->count && !found; j++) {
-      Arg * arg = self->arg_list[j];
+    int found = 0;
+    for (int j = 0; j < self->count && found == 0 && retval != -1; j++) {
+      Arg * arg; 
+      char * arg_str;
 
-      if (Arg_strcmp(arg, argv[i])) {
-        // TODO: use a getter
-        if (arg->has_arg) {
-          // probably wrong.. 
-          
-          // TODO:if an arg has parameters and is the last 
-          // get segfault
-          
-          if (i+1 == argc)
-            return FALSE; // horrible workaround
-          if (Arg_can_be_arg_name(argv[i+1])) {
-            printf("warning %s is a parameter name but has been handled as parameter value.\n",
-                   argv[i+1]);
+      arg_str = argv[i];
+      arg = self->arg_list[j];
+
+      /*
+        Argument is not an argument name when it should.
+      */
+      if (! Arg_can_be_arg_name(arg_str)) {
+        retval = -1;
+        printf("Error: %s is not an argument name.\n", arg_str);
+      }
+      else {
+        if (Arg_strcmp(arg, argv[i])) {
+          if (Arg_has_arg(arg)) {
+            
+            /* 
+              USER INPUT error handling
+            */
+            if (argc == i +1) {
+              retval = -1;
+              printf("Error: %s requires a parameter but is the last string.\n", arg_str);
+            }
+            else if(Arg_can_be_arg_name(argv[i+1])) {
+              retval = -1;
+              printf("Error: %s is a parameter name but has been handled as parameter value.\n",
+                     argv[i+1]);
+            }
+            else {
+              /*
+                everything is fine
+              */
+              arg->arg = argv[i+1];
+              // the next element in the list is the parameter
+              i++;
+            }
           }
-          arg->arg = argv[i+1];
-          // the next element in the list is the parameter
-          i++;
+          Arg_call_function(arg);
+          retval = retval >=0 ? 1 : retval;
+          found = 1;
         }
-        Arg_call_function(arg);
-        found = TRUE;
       }
     }
   }
 
-  // TODO: choose between 0 success -1 fail and 
-  //                      1 success  0 fail..
-  return found;
+  return retval;
 }
 
 int ArgsHandler_insert_arguments(ArgsHandler * self, Arg * arg) {
@@ -66,8 +90,7 @@ int ArgsHandler_insert_arguments(ArgsHandler * self, Arg * arg) {
   return TRUE;
 } 
 
-void ArgsHandler_print(void * args) {
-  ArgsHandler *self = (ArgsHandler *)args;
+void ArgsHandler_print(ArgsHandler * self) {
   
   for (int i = 0; i < self->count; i++) {
     Arg_print(self->arg_list[i]);

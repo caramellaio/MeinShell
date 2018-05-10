@@ -24,7 +24,7 @@ char * Arg_get_short_name(Arg * self) {
   return self->short_name;
 }
 
-int Arg_get_count(Arg * self) {
+int Arg_has_arg(Arg * self) {
   return self->has_arg;
 }
 

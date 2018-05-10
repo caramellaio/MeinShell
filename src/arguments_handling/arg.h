@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef void (*Func)(void*, void*);
+typedef void (*Func)(void*, char*);
 
 typedef struct Arg {
   char * short_name;
@@ -20,7 +20,7 @@ void Arg_destroy(Arg * self);
 
 char * Arg_get_name(Arg * self);
 char * Arg_get_short_name(Arg * self);
-int Arg_get_count(Arg * self);
+int Arg_has_arg(Arg * self);
 
 void Arg_print(Arg * self);
 void Arg_call_function(Arg *self);

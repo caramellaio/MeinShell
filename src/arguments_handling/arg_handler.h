@@ -20,5 +20,5 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv);
 
 int ArgsHandler_insert_arguments(); // fsldjfsusd
 
-void ArgsHandler_print(void * args);
+void ArgsHandler_print(ArgsHandler * self);
 #endif

@@ -21,12 +21,13 @@ Logger * Logger_create(char * out_file, char *err_file, int print_code, int cmd_
   return retval;
 }
 
-Logger * Logger_destroy(Logger * self) {
+void Logger_destroy(Logger * self) {
   if (self) {
     free(self);
   }
 }
 
+//TODO: doesn't log code even if option is enabled
 int Logger_log(Logger * self, char * process, int pid, int err_fd, int out_fd, int code) {
   if (err_fd == out_fd)
     /* caso stesso output */  ;
@@ -35,18 +36,21 @@ int Logger_log(Logger * self, char * process, int pid, int err_fd, int out_fd, i
   
   log_header(self, process, pid, out);
   log_output(self, out_fd, out);
-  close(out);
+  fclose(out);
   close(out_fd);
 
   log_header(self, process, pid, err);
   log_output(self, err_fd, err);
-  close(err);
+  fclose(err);
   close(err_fd);
+
+  return 0;
 }
 
 int Logger_clean(Logger * self) {
   int out_file_removed = remove(self->out_file);
   int err_file_removed = remove(self->err_file);
+  // TODO: could follow the standard 0=ok < 0 not ok
   return out_file_removed == 0 && err_file_removed == 0;
 }
 
@@ -71,7 +75,8 @@ static void log_header(Logger * self, char * process, int pid, FILE * file) {
 
   char buffer[100];
   strftime(buffer, 100, "%Y-%m-%d %H:%M:%S", localtime(&now));
-  fprintf(file, "ID: %d\n", self->id_count);
+  fprintf(file, "SHELL ID: %d\n", self->id_count);
+  fprintf(file, "PID: %d\n", pid);
   fprintf(file, "COMMAND: %s\n", process);
   fprintf(file, "SUB COMMAND: %s\n", process); // not mandatory
   fprintf(file, "DATE: %s\n", buffer);
@@ -83,8 +88,11 @@ static void log_output(Logger * self, int fd, FILE * file) {
   int val = 1;
   while (val != 0) {
     val =  read(fd, buffer, BUFFER_SIZE);
-    if (read < 0) {
-      // error handling
+    if (val < 0) {
+      // use something different for error logging.
+      printf("Error: read failed from fd:%d", fd);
+      // TODO: use something better than an exit.
+      exit(-1);
     }
     fprintf(file,buffer);
   }

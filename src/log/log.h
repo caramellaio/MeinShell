@@ -26,7 +26,7 @@ void Logger_set_cmd_size(Logger * self, int value);
 
 Logger * Logger_init();
 Logger * Logger_create(char * out_file, char *err_file, int print_code,int cmd_size);
-Logger * Logger_destroy(Logger * self);
+void Logger_destroy(Logger * self);
 int Logger_log(Logger * self, char * process, int pid, int err_fd, int out_fd, int code);
 int Logger_clean(Logger * self);
 #endif

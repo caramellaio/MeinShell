@@ -1,6 +1,7 @@
 #include "arguments_handling/arg.h"
 #include "arguments_handling/arg_handler.h"
 #include "log/log.h"
+#include "command_processor/command_processor.h"
 
 #define ARG_COUNT 5
 #define STRING(x) (char *)x
@@ -12,6 +13,11 @@ Logger * logger;
 
 int main(int argc, char ** argv) {
   setup_setting(argc, argv);
+  int c;
+  char ** values = Read_command("pippo | pluto", "|", &c);
+  char * elem[] = {"ls", "wc", "grep \"9\""};
+
+  Execute_commands_with_pipe(&elem, 3);
   return 0;
 }
 

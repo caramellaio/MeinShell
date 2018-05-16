@@ -23,79 +23,124 @@ char ** Read_command(char * command, char * delimiter, int * count) {
   return retval;
 }
 
+int get_p_i(int n) {
+  if (n == 0)
+    n--;
+  return 2 * n +1;
+}
+
+int get_p_o(int n) {
+  if (n == 0)
+    n--;
+  return 2 * n + 3;
+}
+
+int get_l_i(int n) {
+  if (n == 0)
+    n--;
+  return 2 * n + 2;
+}
+
+int get_l_o(int n) {
+  if (n == 0)
+    n--;
+  return 2 * n + 4;
+}
+
 void Execute_commands_with_pipe(char ** commands, int count) {
-  int fd[2];
 
-  char * first_cmd;
-  char ** first_cmd_args;
-  int tmp;
-  first_cmd_args = Read_command(commands[0], " ", &tmp);
-  first_cmd = first_cmd_args[0];
-  pipe(fd);
-  int pid;
-  if ((pid = fork()) == 0) {
-    set_as_parent(fd);
-    execvp(first_cmd, first_cmd_args);
-    perror("Error...");
+  int pipes_count = 4 * count -1; // with stdout, stdin
+  int  fds[pipes_count];
+
+  for (int i = 0; i < pipes_count; i+= 2) {
+    pipe(fds+i);
   }
-  
-  waitpid(pid, NULL, 0);
 
-  for(int i =1; i < count; i++) {
-    /* probably a second pipe for each iteration is necessary... */
+  for(int i =0; i < count; i++) {
     char * proc_name = commands[i];
     char * cmd_name;
     char ** cmd_args;
     int tmp;
     int pid;
 
+    int log_i = fds[get_l_i(i)];
+    int log_o = fds[get_l_o(i)];
+    int p_i;
+    int p_o = fds[get_p_o(i)] ;
+
     cmd_args = Read_command(proc_name, " ", &tmp);
     cmd_name = cmd_args[0];
-    if (i < count-1) {
-      set_as_middle(fd);
-    }
-    else {
-      set_as_child(fd);
-    }
+
+    
     
     if ((pid = fork()) == 0) {
+      if (i > 0) {
+        p_i = fds[get_p_i(i)];
+        if (dup2(p_i, fileno(stdin)) < 0)
+          perror("dup2 p_i failed\n"); 
+      }
+
+      if (dup2(p_o, fileno(stdout)) < 0)
+        perror("dup2 p_o failed\n");
+
+      close(p_i);
+      close(p_o);
+      // try read here...
       execvp(cmd_name, cmd_args);
       perror("Error..");
+    }
+    
+    int code;
+    waitpid(pid, &code, 0);
+      //char ** aa = Read_command("wc", " ", NULL);
+      //execvp(aa[0], aa);
+      //perror("wat");
+    if (pid = fork() == 0) {
+      dup2(log_i, STDIN_FILENO);
+      if (i > 0)
+        close(p_i);
+      close(p_o);
+      close(log_i);
+      close(log_o);
+      duplicate_out(STDIN_FILENO, log_o, fileno(stderr));
+      exit(0);
     }
     /*
      Logger_log(fd[WRITE],....)
      *
     */
-    waitpid(pid, NULL, 0);
   }
+  
 
   wait(NULL);
 }
 
-
-
-void set_as_child(int * fd) {
-  close(fd[WRITE]);
-  printf("fd[READ]=%d\n", fd[READ]);
-  if (dup2(fd[READ], STDIN_FILENO) < 0) {
-    perror("failed to set as child..\n");
-    exit(-1);
+void close_all_pipes(int * pipes, int count) {
+  for (int i =0; i < count; i++) {
+    if(close(pipes[i]) < 0)
+      perror("unable to close pipes!");
   }
-  close(fd[READ]);
 }
 
-void set_as_middle(int * fd) {
-  dup2(fd[READ], STDIN_FILENO);
-  close(fd[READ]);
-  dup2(fd[WRITE], STDOUT_FILENO);
-  close(fd[WRITE]);
-}
-
-void set_as_parent(int * fd) {
-  close(fd[READ]);
-  if (dup2(fd[WRITE], STDOUT_FILENO) < 0) {
-    perror("failed to set as parent..\n");
-    exit(-1);
+/*
+int * do_pipe(char *command0, char ** command0_args, char *command1, char ** command1_args, int * fd, int executed) {
+  int pid0, pid1;
+  if (! executed) {
+    if ( (pid0 = fork()) == 0) {
+      set_as_parent(fd);
+      execvp(command0, command0_args);
+      perror("unable to launch process");
+    }
   }
-  close(fd[WRITE]);
-}
+  
+  int fd_o[2];
+  set_as_child(fd);
+  duplicate_out(fd[0], stdout, fd[1]);
+  if ((pid1 = fork()) == 0) {
+    set_as_child(fd);
+    execvp(command1, command1_args);
+    perror("failed to execute son");
+  }
+
+  return NULL;
+}*/

@@ -1,7 +1,7 @@
 #include "log.h"
 
 static void log_header(Logger * self, char * process, int pid, FILE * file);
-static void log_output(Logger * self, int fd, FILE * file);
+static void log_output(Logger * self, int * fd, FILE * file);
 
 Logger * Logger_init() {
   Logger * retval; 
@@ -83,11 +83,11 @@ static void log_header(Logger * self, char * process, int pid, FILE * file) {
   fprintf(file, "OUTPUT:");
 }
 
-static void log_output(Logger * self, int fd, FILE * file) {
+static void log_output(Logger * self, int * fd, FILE * file) {
   char buffer[BUFFER_SIZE];
   int val = 1;
   while (val != 0) {
-    val =  read(fd, buffer, BUFFER_SIZE);
+    val =  read(fd[0], buffer, BUFFER_SIZE);
     if (val < 0) {
       // use something different for error logging.
       printf("Error: read failed from fd:%d", fd);
@@ -95,5 +95,21 @@ static void log_output(Logger * self, int fd, FILE * file) {
       exit(-1);
     }
     fprintf(file,buffer);
+    write(fd[1], buffer, val);
   }
+}
+
+void duplicate_out(int fd_read, int out0, int out1) {
+  char buffer[BUFFER_SIZE];
+  int val =1;
+
+  while ((val = read(fd_read, buffer, BUFFER_SIZE)) != 0) {
+    if (val < 0) {
+      perror("duplication failed");
+      exit(-1);
+    }
+    write(out0, buffer, val);
+    write(out1, buffer, val);
+  }
+
 }

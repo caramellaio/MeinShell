@@ -16,7 +16,6 @@ int main(int argc, char ** argv) {
   int c;
   char ** values = Read_command("pippo | pluto", "|", &c);
   char * elem[] = {"ls", "wc", "grep \"9\""};
-
   Execute_commands_with_pipe(&elem, 3);
   return 0;
 }

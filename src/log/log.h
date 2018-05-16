@@ -1,4 +1,4 @@
-#ifndef __LOG__H__
+#ifndef __LOG_H__
 #define __LOG_H__
 
 #include <stdlib.h>

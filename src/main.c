@@ -16,7 +16,16 @@ int main(int argc, char ** argv) {
   int c;
   char ** values = Read_command("pippo | pluto", "|", &c);
   char * elem[] = {"ls", "wc", "grep \"9\""};
-  Execute_commands_with_pipe(&elem, 3);
+
+  char *ls[] = {"ls", NULL};
+  char *log[] = {"log", NULL};
+  char *log2[] = {"log", NULL};
+  char *log3[] = {"log", NULL};
+  char *grep[] = {"grep", "bin", NULL};
+  char *wc[] = {"wc", NULL};
+  char **cmd[] = {ls, log, grep, log2, wc, log3, NULL};
+  loop_pipe(cmd);
+  //Execute_commands_with_pipe(&elem, 3);
   return 0;
 }
 

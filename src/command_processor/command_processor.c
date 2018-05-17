@@ -23,124 +23,75 @@ char ** Read_command(char * command, char * delimiter, int * count) {
   return retval;
 }
 
-int get_p_i(int n) {
-  if (n == 0)
-    n--;
-  return 2 * n +1;
-}
 
-int get_p_o(int n) {
-  if (n == 0)
-    n--;
-  return 2 * n + 3;
-}
-
-int get_l_i(int n) {
-  if (n == 0)
-    n--;
-  return 2 * n + 2;
-}
-
-int get_l_o(int n) {
-  if (n == 0)
-    n--;
-  return 2 * n + 4;
-}
-
-void Execute_commands_with_pipe(char ** commands, int count) {
-
-  int pipes_count = 4 * count -1; // with stdout, stdin
-  int  fds[pipes_count];
-
-  for (int i = 0; i < pipes_count; i+= 2) {
-    pipe(fds+i);
+/*void CommandProcessor_run_command(Command * command) {
+  int do_redirect =0;
+  char * redirect;
+  if (command->type == REDIRECT) {
+    do_redirect = 1;
+    // not so sure... 
+    redirect = (char *)command->right;
   }
-
-  for(int i =0; i < count; i++) {
-    char * proc_name = commands[i];
-    char * cmd_name;
-    char ** cmd_args;
-    int tmp;
-    int pid;
-
-    int log_i = fds[get_l_i(i)];
-    int log_o = fds[get_l_o(i)];
-    int p_i;
-    int p_o = fds[get_p_o(i)] ;
-
-    cmd_args = Read_command(proc_name, " ", &tmp);
-    cmd_name = cmd_args[0];
-
-    
-    
-    if ((pid = fork()) == 0) {
-      if (i > 0) {
-        p_i = fds[get_p_i(i)];
-        if (dup2(p_i, fileno(stdin)) < 0)
-          perror("dup2 p_i failed\n"); 
-      }
-
-      if (dup2(p_o, fileno(stdout)) < 0)
-        perror("dup2 p_o failed\n");
-
-      close(p_i);
-      close(p_o);
-      // try read here...
-      execvp(cmd_name, cmd_args);
-      perror("Error..");
-    }
-    
-    int code;
-    waitpid(pid, &code, 0);
-      //char ** aa = Read_command("wc", " ", NULL);
-      //execvp(aa[0], aa);
-      //perror("wat");
-    if (pid = fork() == 0) {
-      dup2(log_i, STDIN_FILENO);
-      if (i > 0)
-        close(p_i);
-      close(p_o);
-      close(log_i);
-      close(log_o);
-      duplicate_out(STDIN_FILENO, log_o, fileno(stderr));
-      exit(0);
-    }
-    /*
-     Logger_log(fd[WRITE],....)
-     *
-    */
+  else if (command->type == PIPE) {
+    // command should terminate with a NULL
+    char *** commands = CommandReader_parse_pipe(command); 
+    loop_pipe(commands);
   }
-  
-
-  wait(NULL);
-}
-
-void close_all_pipes(int * pipes, int count) {
-  for (int i =0; i < count; i++) {
-    if(close(pipes[i]) < 0)
-      perror("unable to close pipes!");
+  else {
+    // SIMPLE COMMAND 
+    Execute_single_command(Command_get_command_string(command),
+                           Command_get_param(command));
   }
-}
+}*/
 
-/*
-int * do_pipe(char *command0, char ** command0_args, char *command1, char ** command1_args, int * fd, int executed) {
-  int pid0, pid1;
-  if (! executed) {
-    if ( (pid0 = fork()) == 0) {
-      set_as_parent(fd);
-      execvp(command0, command0_args);
-      perror("unable to launch process");
-    }
-  }
-  
-  int fd_o[2];
-  set_as_child(fd);
-  duplicate_out(fd[0], stdout, fd[1]);
-  if ((pid1 = fork()) == 0) {
-    set_as_child(fd);
-    execvp(command1, command1_args);
-    perror("failed to execute son");
-  }
+char *** parse_command_to_commands(char * command, char ** args) {
+  perror("Error: function not yet implemented!");
+  exit(-1);
 
   return NULL;
-}*/
+}
+void Execute_single_command(char * command, char ** args, int redirect) {
+  char *** commands = parse_command_to_commands(command, args);
+  if (!redirect) {
+    loop_pipe(commands);
+  }
+  else {
+    /*
+      TODO: IDEA!!! : use log process to redirect output too...
+    */
+    perror("Error: not yet implemented redirecting output...");
+    exit(-1);
+  }
+}
+
+void loop_pipe(char ***cmd) 
+{
+  int   p[2];
+  pid_t pid;
+  int   fd_in = 0;
+
+  while (*cmd != NULL)
+    {
+      pipe(p);
+      if ((pid = fork()) == -1)
+        {
+          exit(EXIT_FAILURE);
+        }
+      else if (pid == 0)
+        {
+          dup2(fd_in, 0); //change the input according to the old one 
+          if (*(cmd + 1) != NULL)
+            dup2(p[1], 1);
+          close(p[0]);
+          execvp((*cmd)[0], *cmd);
+          exit(EXIT_FAILURE);
+        }
+      else
+        {
+          wait(NULL);
+          close(p[1]);
+          fd_in = p[0]; //save the input for the next command
+          cmd++;
+        }
+    }
+}

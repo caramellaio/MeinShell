@@ -5,7 +5,6 @@
 #define BUFFER_SIZE 80
 #define STRING(x) (char *)x
 
-#include "../../arguments_handling/arg_handler.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -31,6 +30,6 @@ void Logger_set_process(Logger * self, char * process);
 void Logger_set_sub_process(Logger * self, char * subprocess);
 void Logger_destroy(Logger * self);
 
-void Logger_process_run(int argc, char ** argv);
+void Logger_process_run();
 void Logger_log(Logger * self);
 #endif

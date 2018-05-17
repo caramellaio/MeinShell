@@ -5,7 +5,8 @@
 #define FALSE 0
 
 #include "arg.h"
-#include "string.h"
+#include <string.h>
+#include <assert.h>
 
 typedef struct ArgsHandler {
   Arg ** arg_list;

@@ -6,9 +6,8 @@ ArgsHandler * ArgsHandler_init(int count) {
   self->count = count;
   self->used = 0;
   self->arg_list = (Arg **)malloc(sizeof(Arg *)*self->count);
-
-
-
+  
+  return self;
 }
 void ArgsHandler_destroy(ArgsHandler * self) {
   for (int i = 0; i < self->count; i++) {
@@ -31,7 +30,7 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
 
     int found = 0;
     for (int j = 0; j < self->count && found == 0 && retval != -1; j++) {
-      Arg * arg; 
+      Arg * arg = NULL; 
       char * arg_str;
 
       arg_str = argv[i];
@@ -42,7 +41,8 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
       */
       if (! Arg_can_be_arg_name(arg_str)) {
         retval = -1;
-        printf("Error: %s is not an argument name.\n", arg_str);
+        fprintf(stderr, "Error: %s is not an argument name.\n", arg_str);
+        exit(-1);
       }
       else {
         if (Arg_strcmp(arg, argv[i])) {
@@ -86,6 +86,7 @@ int ArgsHandler_insert_arguments(ArgsHandler * self, Arg * arg) {
 
   self->arg_list[self->used] = arg;
   self->used++;
+  assert(self->used <= self->count);
 
   return TRUE;
 } 

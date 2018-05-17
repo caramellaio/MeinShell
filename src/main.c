@@ -24,7 +24,7 @@ int main(int argc, char ** argv) {
   char *grep[] = {"grep", "bin", NULL};
   char *wc[] = {"wc", NULL};
   char **cmd[] = {ls, log, grep, log2, wc, log3, NULL};
-  loop_pipe(cmd);
+  loop_pipe(cmd, 1, "redir.txt");
   //Execute_commands_with_pipe(&elem, 3);
   return 0;
 }
@@ -41,6 +41,8 @@ void setup_setting(int argc, char ** argv) {
   if (! ArgsHandler_handle_input(args_handler, argc, argv)) {
     shell_exit(-1, "Invalid argument passing..."); 
   }
+  
+  ArgsHandler_destroy(args_handler);
 }
 
 // this is not a permanent function...

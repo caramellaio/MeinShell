@@ -1,6 +1,7 @@
 #include "shell.h"
 
 static int is_absolute_path(char * path);
+static char * get_command_line(Shell * self, size_t *len);
 
 Shell * Shell_init() {
   Shell * retval; 

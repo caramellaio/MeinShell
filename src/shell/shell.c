@@ -6,6 +6,7 @@ static char * get_command_line(Shell * self, size_t *len);
 Shell * Shell_init() {
   Shell * retval; 
 
+  retval = SHELL_ALLOC(1);
   retval->running_process_pids = -1;
   retval->config = ShellConfig_init();
 }

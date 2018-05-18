@@ -5,6 +5,9 @@ ShellConfig * ShellConfig_init() {
 
   retval = (ShellConfig *)malloc(sizeof(ShellConfig));
 
+  retval->out_file = "";
+  retval->err_file = "";
+
   ShellConfig_set_out_file(retval, DEF_OUT_FILE);
   ShellConfig_set_err_file(retval, DEF_ERR_FILE);
   ShellConfig_set_logger_path(retval, DEF_LOGGER_PATH);

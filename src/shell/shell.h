@@ -2,6 +2,9 @@
 #define __SHELL__H__
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "config.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -13,7 +16,6 @@ typedef struct Shell {
 
   /* changes on runtime */
   int running_process_pids;
-  char * current_path;
 
   ShellConfig * config;
   /* given at the beginning */

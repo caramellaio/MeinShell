@@ -1,24 +1,33 @@
 #ifndef __SHELL__H__
 #define __SHELL__H__
-#include <stdio.h>
-#include <stdlib.h>
-#include "config.h"
+#define _GNU_SOURCE
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define SHELL(x) (Shell*)x
 #define SHELL_ALLOC(x) SHELL(malloc(sizeof(Shell)*x))
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <string.h>
+#include "config.h"
 
 typedef struct Shell {
   // TODO: change it into a linked list of process
 
   /* changes on runtime */
   int running_process_pids;
-  char * current_path;
 
   ShellConfig * config;
   /* given at the beginning */
 } Shell;
 
+Shell * Shell_init();
+void Shell_destroy();
+
+void Shell_start(Shell * self);
 int Shell_run_command(Shell * self, char * command);
 void Shell_print(Shell * self);
 void Shell_print_error(Shell * self, char * error, int do_exit);

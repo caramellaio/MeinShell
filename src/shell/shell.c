@@ -1,7 +1,23 @@
 #include "shell.h"
 
 static int is_absolute_path(char * path);
+
+Shell * Shell_init() {
+  Shell * retval; 
+
+  retval->running_process_pids = -1;
+  retval->config = ShellConfig_init();
+}
+void Shell_destroy(Shell * self) {
+  ShellConfig_destroy(self->config);
+  free(self);
+  self = NULL;
+}
 int Shell_run_command(Shell * self, char * command);
+
+void Shell_start(Shell * self) {
+  Shell_main_loop(self);
+}
 void Shell_print(Shell * self) {
   char cwd[1024];
   getcwd(cwd, sizeof(cwd));
@@ -14,8 +30,12 @@ void Shell_print_error(Shell * self, char * error, int do_exit) {
   }
 }
 void Shell_main_loop(Shell * self) {
+  char * command = NULL;
+  size_t size = 0;
+
   while(1) {
-    // read line
+    Shell_print(self);
+    command = get_command_line(self, &size);
     // parse line
     // exec line
   }
@@ -49,6 +69,20 @@ void Shell_exit(Shell * self, int code) {
   printf("Shell exit with code: %d", code);
 }
 
+static char * get_command_line(Shell * self, size_t *len) {
+  char * retval = NULL;
+  // not sure... 
+  *len= 0;
+  FILE * fp = stdin;
+
+  if (getline(&retval, len, fp) == -1) {
+    Shell_print_error(self, "Error: unable to read line...", 0);
+    retval = NULL;
+  }
+
+
+  return retval;
+}
 static int is_absolute_path(char * path) {
   return 1;
 }

@@ -19,7 +19,9 @@ main: arg.o arg_handler.o log.o command_processor.o
 	$(CC) arg.o arg_handler.o log.o command_processor.o src/main.c $(CFLAGS) -o shell
 
 build: main
+	if [ ! -d "bin" ]; then mkdir bin; fi
 	mv shell bin/
+	currentPath=pwd && cd src/log/logger_process/ && make build && cd $(currentPath)
 clean:
-	rm -rf *.o
-	rm bin/shell # TODO: handle case when bin/shell does not exist
+	if [ -d "bin" ]; then rm -rf *.o; if [ -f "bin/shell" ]; then rm bin/shell; fi fi
+	currentPath=pwd && cd src/log/logger_process/ && make clean && cd $(currentPath)

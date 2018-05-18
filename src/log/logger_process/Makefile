@@ -15,7 +15,6 @@ main: arg.o arg_handler.o logger_process.o
 	$(CC) arg.o arg_handler.o logger_process.o logger_process_main.c $(CFLAGS) -o Logger
 
 build: main
-	mv Logger bin/
+	mv Logger ../../../bin/
 clean:
-	rm -rf *.o
-	rm bin/Logger # TODO: handle case when bin/shell does not exist
+	if [ -d "../../../bin" ]; then rm -rf *.o; if [ -f "../../../bin/Logger" ]; then rm ../../../bin/Logger; fi fi

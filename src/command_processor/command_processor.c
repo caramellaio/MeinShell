@@ -25,10 +25,14 @@ char *** parse_command_to_commands(char * command, char ** args) {
 
   return NULL;
 }
+
+/**
+ * @unused
+**/
 void Execute_single_command(char * command, char ** args, int redirect) {
   char *** commands = parse_command_to_commands(command, args);
   if (!redirect) {
-    loop_pipe(commands);
+    loop_pipe(commands, NULL, NULL);
   }
   else {
     /*

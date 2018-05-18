@@ -13,10 +13,6 @@ Logger * logger;
 
 int main(int argc, char ** argv) {
   setup_setting(argc, argv);
-  int c;
-  char ** values = Read_command("pippo | pluto", "|", &c);
-  char * elem[] = {"ls", "wc", "grep \"9\""};
-
   char *ls[] = {"ls", NULL};
   char *log[] = {"log", NULL};
   char *log2[] = {"log", NULL};
@@ -32,11 +28,20 @@ int main(int argc, char ** argv) {
 void setup_setting(int argc, char ** argv) {
   args_handler = ArgsHandler_init(ARG_COUNT);
   logger = Logger_init();
+  /* print help and close the program */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help", STRING(NULL), args_handler, 0, ArgsHandler_print)); 
+  /* set the Logger output file */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-o", "--out-file", STRING(NULL), logger, 1, Logger_set_out_file)); 
+  /* set the Logger error file */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", STRING(NULL), logger, 1, Logger_set_err_file)); 
+  /* set if the Logger have to print the return code of the processes*/
   ArgsHandler_insert_arguments(args_handler, Arg_init("-c", "--code", STRING(NULL), logger, 0, Logger_enable_print_code)); 
+  /* set the max size in characters of the output of every process */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), logger, 1, Logger_set_cmd_size)); 
+  /* set the logger process executable path 
+    COMMENTED because not yet implemented.
+  */
+  //ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), shell, 1, Shell_set_logger_path)); 
 
   if (! ArgsHandler_handle_input(args_handler, argc, argv)) {
     shell_exit(-1, "Invalid argument passing..."); 
@@ -50,5 +55,3 @@ void shell_exit(int code, char * message) {
   printf("%s\n",message);
   exit(code);
 }
-
-// glue code idea: function that takes a void * (which is the function...

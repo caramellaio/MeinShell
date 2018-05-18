@@ -3,6 +3,12 @@ CC=gcc
 
 CFLAGS= -Wall -Wextra -g
 
+shell.o: src/shell/shell.c src/shell/shell.h
+	$(CC) -c src/shell/shell.c $(CFLAGS)
+
+config.o: src/shell/config.c src/shell/config.h
+	$(CC) -c src/shell/config.c $(CFLAGS)
+
 command_processor.o : src/command_processor/command_processor.c src/command_processor/command_processor.h
 	$(CC) -c src/command_processor/command_processor.c $(CFLAGS)
 
@@ -15,8 +21,8 @@ arg.o : src/arguments_handling/arg.c src/arguments_handling/arg.h
 arg_handler.o : src/arguments_handling/arg_handler.c src/arguments_handling/arg_handler.h
 	$(CC) -c src/arguments_handling/arg_handler.c $(CFLAGS)
 
-main: arg.o arg_handler.o log.o command_processor.o
-	$(CC) arg.o arg_handler.o log.o command_processor.o src/main.c $(CFLAGS) -o shell
+main: arg.o arg_handler.o log.o command_processor.o config.o shell.o
+	$(CC) arg.o arg_handler.o log.o command_processor.o config.o shell.o src/main.c $(CFLAGS) -o shell
 
 build: main
 	if [ ! -d "bin" ]; then mkdir bin; fi

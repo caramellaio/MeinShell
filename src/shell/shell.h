@@ -1,10 +1,10 @@
 #ifndef __SHELL__H__
 #define __SHELL__H__
-#define _GNU_SOURCE
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define SHELL(x) (Shell*)x
 #define SHELL_ALLOC(x) SHELL(malloc(sizeof(Shell)*x))
+#define NO_PROCESS -1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "config.h"
 
 typedef struct Shell {

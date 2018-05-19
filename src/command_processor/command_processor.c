@@ -1,4 +1,5 @@
 #include "command_processor.h"
+
 char ** Read_command(char * command, char * delimiter, int * count) {
   char * token;
   char * cmd;
@@ -45,11 +46,14 @@ void Execute_single_command(char * command, char ** args, int redirect) {
 
 void loop_pipe(char ***cmd, int redirect, char * redirect_file) 
 {
+  int stdin_fd_cp;
   int   p[2];
   int err_p[2];
   pid_t pid;
   int   fd_in = 0;
   FILE * redirect_f;
+
+  stdin_fd_cp = dup(fileno(stdin));
   if (redirect) {
     redirect_f = fopen(redirect_file, "a+");
   }
@@ -93,6 +97,8 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file)
           cmd++;
         }
     }
+
+  dup2(stdin_fd_cp, fileno(stdin));
 }
 
 void Util_write_to_file(FILE * file) {

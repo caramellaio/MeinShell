@@ -1,7 +1,7 @@
 #TODO: move .o files in a separate folder...
 CC=gcc
 
-CFLAGS= -Wall -Wextra -g
+CFLAGS= -Wall -Wextra -g -lreadline
 
 shell.o: src/shell/shell.c src/shell/shell.h
 	$(CC) -c src/shell/shell.c $(CFLAGS)

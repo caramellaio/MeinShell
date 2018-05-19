@@ -5,6 +5,7 @@
 #define SHELL(x) (Shell*)x
 #define SHELL_ALLOC(x) SHELL(malloc(sizeof(Shell)*x))
 #define NO_PROCESS -1
+#define STRING(x) (char *)x
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,7 @@
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "../arguments_handling/arg_handler.h"
 #include "config.h"
 
 typedef struct Shell {

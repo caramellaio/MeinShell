@@ -135,34 +135,38 @@ static int try_internal_cmds(Shell * self, char *command) {
 
   char ** splitted;
 
-  if (strcmp(command, "quit") == 0) {
-    Shell_exit(self, EXIT_SUCCESS);
-  }
-
-  splitted = Read_cmd(command, " ", &count);
-  /* horrible string matching */
-  if (strcmp(splitted[0], "cd") == 0) {
-    retval = 1;
-    /*
-     cd takes only one argument
-    */
-    if (count > 2) {
-      Shell_print_error(self, "Error: cd takes only one argument", 0);
-      // an error in cd should not trigger other errors.
-      retval = 1;
-    }
-    else if(count == 1) {
-      // case cd without parameters.
-      Shell_cd(self, NULL);     
-    }
-    else {
-      Shell_cd(self, splitted[1]);
-    }
-  }
-  else {
+  if (strcmp(command, "") == 0) {
     retval = 0;
   }
+  else {
+    if (strcmp(command, "quit") == 0) {
+      Shell_exit(self, EXIT_SUCCESS);
+    }
 
+    splitted = Read_cmd(command, " ", &count);
+    /* horrible string matching */
+    if (strcmp(splitted[0], "cd") == 0) {
+      retval = 1;
+      /*
+       cd takes only one argument
+      */
+      if (count > 2) {
+        Shell_print_error(self, "Error: cd takes only one argument", 0);
+        // an error in cd should not trigger other errors.
+        retval = 1;
+      }
+      else if(count == 1) {
+        // case cd without parameters.
+        Shell_cd(self, NULL);     
+      }
+      else {
+        Shell_cd(self, splitted[1]);
+      }
+    }
+    else {
+      retval = 0;
+    }
+  }
   free(splitted);
   return retval;
 }

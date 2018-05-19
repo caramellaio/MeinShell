@@ -27,7 +27,7 @@ main: arg.o arg_handler.o log.o command_processor.o config.o shell.o
 build: main
 	if [ ! -d "bin" ]; then mkdir bin; fi
 	mv shell bin/
-	currentPath=pwd && cd src/log/logger_process/ && make build && cd $(currentPath)
+	cd src/log/logger_process/ && make build
 clean:
 	if [ -d "bin" ]; then rm -rf *.o; if [ -f "bin/shell" ]; then rm bin/shell; fi fi
 	currentPath=pwd && cd src/log/logger_process/ && make clean && cd $(currentPath)

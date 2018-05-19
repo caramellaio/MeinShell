@@ -29,11 +29,12 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
   for (int i = 1; i < argc && retval != -1; i++) {
 
     int found = 0;
+    char * arg_str;
+
+    arg_str = argv[i];
+
     for (int j = 0; j < self->count && found == 0 && retval != -1; j++) {
       Arg * arg = NULL; 
-      char * arg_str;
-
-      arg_str = argv[i];
       arg = self->arg_list[j];
 
       /*
@@ -74,6 +75,11 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
           found = 1;
         }
       }
+    }
+
+    if (found == 0) {
+      retval = -1;
+      printf("Error: %s is not a valid parameter.\n", argv[i]);
     }
   }
 

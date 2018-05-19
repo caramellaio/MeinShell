@@ -25,8 +25,8 @@ void ShellConfig_destroy(ShellConfig * self);
 void ShellConfig_set_logger_path(ShellConfig * self, 
                                  char * logger_path);
 
-void ShellConfig_set_outfile(ShellConfig * self, 
-                             char * out_file);
+void ShellConfig_set_out_file(ShellConfig * self, 
+                              char * out_file);
 
 void ShellConfig_set_err_file(ShellConfig * self, 
                               char * err_file);

@@ -2,6 +2,8 @@
 #define __SHELL__H__
 
 #define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 #define SHELL(x) (Shell*)x
 #define SHELL_ALLOC(x) SHELL(malloc(sizeof(Shell)*x))
 #define NO_PROCESS -1
@@ -11,6 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <pwd.h>
 #include <signal.h>
 #include <string.h>
 #include <readline/readline.h>
@@ -32,7 +35,6 @@ Shell * Shell_init();
 void Shell_destroy();
 
 void Shell_start(Shell * self);
-int Shell_run_command(Shell * self, char * command);
 void Shell_print(Shell * self);
 void Shell_print_error(Shell * self, char * error, int do_exit);
 void Shell_main_loop(Shell * self);

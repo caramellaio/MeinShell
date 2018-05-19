@@ -1,19 +1,16 @@
-
 #include "arg_handler.h"
 
-ArgsHandler * ArgsHandler_init(int count) {
+ArgsHandler *ArgsHandler_init(int count) {
   ArgsHandler *self = (ArgsHandler *)malloc(sizeof(ArgsHandler));
   self->count = count;
   self->used = 0;
-  self->arg_list = (Arg **)malloc(sizeof(Arg *)*self->count);
-  
+  self->arg_list = (Arg **)malloc(sizeof(Arg *) * self->count);
   return self;
 }
-void ArgsHandler_destroy(ArgsHandler * self) {
-  for (int i = 0; i < self->count; i++) {
-    Arg_destroy(self->arg_list[i]);
-  }
 
+void ArgsHandler_destroy(ArgsHandler *self) {
+  for (int i = 0; i < self->count; i++)
+    Arg_destroy(self->arg_list[i]);
   free(self);
 }
 
@@ -22,25 +19,23 @@ void ArgsHandler_destroy(ArgsHandler * self) {
   is an error
 */
 
-int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
- 
+int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
   int retval = 0;
   // argv[0] is the program name
   for (int i = 1; i < argc && retval != -1; i++) {
-
     int found = 0;
-    char * arg_str;
-
+    char *arg_str;
+    
     arg_str = argv[i];
 
     for (int j = 0; j < self->count && found == 0 && retval != -1; j++) {
-      Arg * arg = NULL; 
+      Arg *arg = NULL;
       arg = self->arg_list[j];
 
       /*
         Argument is not an argument name when it should.
       */
-      if (! Arg_can_be_arg_name(arg_str)) {
+      if (!Arg_can_be_arg_name(arg_str)) {
         retval = -1;
         fprintf(stderr, "Error: %s is not an argument name.\n", arg_str);
         exit(-1);
@@ -48,30 +43,28 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
       else {
         if (Arg_strcmp(arg, argv[i])) {
           if (Arg_has_arg(arg)) {
-            
             /* 
               USER INPUT error handling
             */
-            if (argc == i +1) {
+            if (argc == i + 1) {
               retval = -1;
               printf("Error: %s requires a parameter but is the last string.\n", arg_str);
             }
-            else if(Arg_can_be_arg_name(argv[i+1])) {
+            else if (Arg_can_be_arg_name(argv[i + 1])) {
               retval = -1;
-              printf("Error: %s is a parameter name but has been handled as parameter value.\n",
-                     argv[i+1]);
+              printf("Error: %s is a parameter name but has been handled as parameter value.\n", argv[i + 1]);
             }
             else {
               /*
                 everything is fine
               */
-              arg->arg = argv[i+1];
+              arg->arg = argv[i + 1];
               // the next element in the list is the parameter
               i++;
             }
           }
           Arg_call_function(arg);
-          retval = retval >=0 ? 1 : retval;
+          retval = retval >= 0 ? 1 : retval;
           found = 1;
         }
       }
@@ -82,26 +75,22 @@ int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv) {
       printf("Error: %s is not a valid parameter.\n", argv[i]);
     }
   }
-
   return retval;
 }
 
-int ArgsHandler_insert_arguments(ArgsHandler * self, Arg * arg) {
+int ArgsHandler_insert_arguments(ArgsHandler *self, Arg *arg) {
   if (self->used >= self->count)
     return FALSE;
 
   self->arg_list[self->used] = arg;
   self->used++;
   assert(self->used <= self->count);
-
   return TRUE;
-} 
+}
 
-void ArgsHandler_print(ArgsHandler * self) {
-  
+void ArgsHandler_print(ArgsHandler *self) {
   for (int i = 0; i < self->count; i++) {
     Arg_print(self->arg_list[i]);
     printf("\n");
-  }  
+  }
 }
-

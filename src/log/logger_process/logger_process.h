@@ -11,25 +11,24 @@
 #include <fcntl.h>
 #include <time.h>
 
-
 typedef struct Logger {
-  char * process;
-  char * sub_process;
-  char * out_file;
+  char *process;
+  char *sub_process;
+  char *out_file;
   int code;
   int print_code;
   int pid;
 } Logger;
 
-Logger * Logger_init();
-void Logger_set_code(Logger * self, int code);
-void Logger_enable_print_code(Logger * self);
-void Logger_set_pid(Logger * self, int pid);
-void Logger_set_out_file(Logger * self, char * outfile);
-void Logger_set_process(Logger * self, char * process);
-void Logger_set_sub_process(Logger * self, char * subprocess);
-void Logger_destroy(Logger * self);
+Logger *Logger_init();
+void Logger_set_code(Logger *self, int code);
+void Logger_enable_print_code(Logger *self);
+void Logger_set_pid(Logger *self, int pid);
+void Logger_set_out_file(Logger *self, char *outfile);
+void Logger_set_process(Logger *self, char *process);
+void Logger_set_sub_process(Logger *self, char *subprocess);
+void Logger_destroy(Logger *self);
 
 void Logger_process_run();
-void Logger_log(Logger * self);
+void Logger_log(Logger *self);
 #endif

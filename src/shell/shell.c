@@ -2,6 +2,7 @@
 
 static int try_internal_cmds(Shell *self, char *command);
 static char **Read_command(char *command, char *delimiter, int *size);
+static void set_output_max_size(Shell *self, char *val);
 
 Shell *Shell_init() {
   Shell *retval; 
@@ -91,7 +92,7 @@ void Shell_configure(Shell *self, int argc, char *argv) {
                                self->config, 0, ShellConfig_enable_print_code)); 
   /*set the max size in characters of the output of every process */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), 
-                               self->config, 1, ShellConfig_set_output_max_size)); 
+                               self->config, 1, set_output_max_size)); 
   /*set the logger process executable path 
   */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), 
@@ -192,7 +193,14 @@ void Shell_on_quit_request(Shell *self) {
     Shell_kill_running_process(self);
   }
 }
-/*just a temp function... */
+
+static void set_output_max_size(Shell *self, char *val) {
+  int m_size;
+
+  m_size = atoi(val);
+
+  ShellConfig_set_output_max_size(self->config, m_size);
+}
 
 static char **Read_command(char *command, char *delimiter, int *count) {
   char *token;

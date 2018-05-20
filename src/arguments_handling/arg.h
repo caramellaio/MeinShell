@@ -4,26 +4,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef void (*Func)(void*, char*);
+typedef void (*Func)(void *, char *);
 
 typedef struct Arg {
-  char * short_name;
-  char * name;
-  void * arg;
-  void * caller;
+  char *short_name;
+  char *name;
+  void *arg;
+  void *caller;
   int has_arg;
   Func func;
 } Arg;
 
-Arg * Arg_init(char * short_name, char *name, void *arg, void * caller, int has_arg, Func func);
-void Arg_destroy(Arg * self);
+Arg *Arg_init(char *short_name, char *name, void *arg, void *caller, int has_arg, Func func);
+void Arg_destroy(Arg *self);
 
-char * Arg_get_name(Arg * self);
-char * Arg_get_short_name(Arg * self);
-int Arg_has_arg(Arg * self);
+char *Arg_get_name(Arg *self);
+char *Arg_get_short_name(Arg *self);
+int Arg_has_arg(Arg *self);
 
-void Arg_print(Arg * self);
+void Arg_print(Arg *self);
 void Arg_call_function(Arg *self);
-int Arg_strcmp(Arg * self, char * str);
-int Arg_can_be_arg_name(char * str_arg);
+int Arg_strcmp(Arg *self, char *str);
+int Arg_can_be_arg_name(char *str_arg);
+
 #endif

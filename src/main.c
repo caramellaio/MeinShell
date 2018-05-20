@@ -6,13 +6,13 @@
 
 #define ARG_COUNT 5
 #define STRING(x) (char *)x
-void setup_setting(int argc, char ** argv);
-void shell_exit(int code, char * message);
+void setup_setting(int argc, char **argv);
+void shell_exit(int code, char *message);
 // TODO: should main capture sigterm in order to kill child process?
-ArgsHandler * args_handler;
-Logger * logger;
+ArgsHandler *args_handler;
+Logger *logger;
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
   setup_setting(argc, argv);
   char *ls[] = {"ls", NULL};
   char *log[] = {"log", NULL};
@@ -30,33 +30,33 @@ int main(int argc, char ** argv) {
   return 0;
 }
 
-void setup_setting(int argc, char ** argv) {
+void setup_setting(int argc, char **argv) {
   args_handler = ArgsHandler_init(ARG_COUNT);
   logger = Logger_init();
   /* print help and close the program */
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help", STRING(NULL), args_handler, 0, ArgsHandler_print)); 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help", STRING(NULL), args_handler, 0, ArgsHandler_print));
   /* set the Logger output file */
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-o", "--out-file", STRING(NULL), logger, 1, Logger_set_out_file)); 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-o", "--out-file", STRING(NULL), logger, 1, Logger_set_out_file));
   /* set the Logger error file */
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", STRING(NULL), logger, 1, Logger_set_err_file)); 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", STRING(NULL), logger, 1, Logger_set_err_file));
   /* set if the Logger have to print the return code of the processes*/
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-c", "--code", STRING(NULL), logger, 0, Logger_enable_print_code)); 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-c", "--code", STRING(NULL), logger, 0, Logger_enable_print_code));
   /* set the max size in characters of the output of every process */
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), logger, 1, Logger_set_cmd_size)); 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), logger, 1, Logger_set_cmd_size));
   /* set the logger process executable path 
     COMMENTED because not yet implemented.
   */
-  //ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), shell, 1, Shell_set_logger_path)); 
+  //ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), shell, 1, Shell_set_logger_path));
 
-  if (! ArgsHandler_handle_input(args_handler, argc, argv)) {
-    shell_exit(-1, "Invalid argument passing..."); 
+  if (!ArgsHandler_handle_input(args_handler, argc, argv)) {
+    shell_exit(-1, "Invalid argument passing...");
   }
-  
+
   ArgsHandler_destroy(args_handler);
 }
 
 // this is not a permanent function...
-void shell_exit(int code, char * message) {
-  printf("%s\n",message);
+void shell_exit(int code, char *message) {
+  printf("%s\n", message);
   exit(code);
 }

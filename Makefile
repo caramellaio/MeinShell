@@ -33,4 +33,4 @@ build: main
 	cd src/log/logger_process/ && make build
 clean:
 	if [ -d "bin" ]; then rm -rf *.o; if [ -f "bin/shell" ]; then rm bin/shell; fi fi
-	currentPath=pwd && cd src/log/logger_process/ && make clean && cd $(currentPath)
+	cd src/log/logger_process/ && make clean

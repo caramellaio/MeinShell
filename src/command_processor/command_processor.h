@@ -7,4 +7,4 @@
 #define READ 0
 #define WRITE 1
 #define DELIMITERS "|"
-char ** Read_command(char * command, char * delimiter, int * count);
+char **Read_command(char *command, char *delimiter, int *count);

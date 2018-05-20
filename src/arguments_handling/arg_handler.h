@@ -9,17 +9,18 @@
 #include <assert.h>
 
 typedef struct ArgsHandler {
-  Arg ** arg_list;
+  Arg **arg_list;
   int count;
   int used;
 } ArgsHandler;
 
-ArgsHandler * ArgsHandler_init(int count);
-void ArgsHandler_destroy(ArgsHandler * self);
+ArgsHandler *ArgsHandler_init(int count);
+void ArgsHandler_destroy(ArgsHandler *self);
 
-int ArgsHandler_handle_input(ArgsHandler * self, int argc, char ** argv);
+int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv);
 
-int ArgsHandler_insert_arguments(); // fsldjfsusd
+int ArgsHandler_insert_arguments();
 
-void ArgsHandler_print(ArgsHandler * self);
+void ArgsHandler_print(ArgsHandler *self);
+
 #endif

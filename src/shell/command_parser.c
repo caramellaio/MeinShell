@@ -103,7 +103,7 @@ char *** parse_line(char * line, int * length,
   else if (last != i) {
     retval[retval_index] = add_command(line, last, i);
   }
-  retval = (char ***)realloc(retval, retval_index+2);
+  retval = (char ***)realloc(retval, sizeof(char **) * (retval_index+2));
   retval[retval_index+1] = NULL;
 
   return retval;

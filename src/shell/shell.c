@@ -180,8 +180,8 @@ static int try_internal_cmds(Shell *self, char *command) {
     else {
       retval = 0;
     }
+    free(splitted);
   }
-  free(splitted);
   return retval;
 }
 /*just a temp function... */

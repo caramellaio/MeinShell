@@ -2,7 +2,7 @@
 
 static int is_absolute_path(char * path);
 static int try_internal_cmds(Shell * self, char *command);
-static char ** Read_cmd(char * command, char * delimiter, int * size);
+static char ** Read_command(char * command, char * delimiter, int * size);
 Shell * Shell_init() {
   Shell * retval; 
 
@@ -37,22 +37,35 @@ void Shell_print_error(Shell * self, char * error, int do_exit) {
 }
 void Shell_main_loop(Shell * self) {
   char buffer[100];
-  int rc_c =0;
   char *input;
-  /* temp.. */
-  char ** splitted;
+
+  /* command handling */
+  char redirect_path[100];
+  int command_count = 0;
+  int is_redirect = 0;
+  int has_pipe = 0;
+  int is_async = 0;
+
   for (;;) {
+    /* read input */
     snprintf(buffer, sizeof(buffer), "%s:%s $ ", getenv("USER"), getcwd(NULL, 1024));
     input = readline(buffer);
     if (!input)
       break;
 
+    /* try built in commands */
     if (try_internal_cmds(self, input))
       continue;
-    /*
-    splitted = Read_cmd(input, " ", &rc_c);
-    try_internal_cmds(self, splitted[0], splitted);
-    */
+
+    /* parse commands */
+    char *** commands = parse_line(input, &command_count,  
+                                   &is_async, &has_pipe,
+                                   &is_redirect, &redirect_path);
+
+    /* execute commands */
+
+    /* free dynamics strings */ 
+    free_commands(commands, command_count);
     free(input);
   }
 }
@@ -143,7 +156,7 @@ static int try_internal_cmds(Shell * self, char *command) {
       Shell_exit(self, EXIT_SUCCESS);
     }
 
-    splitted = Read_cmd(command, " ", &count);
+    splitted = Read_command(command, " ", &count);
     /* horrible string matching */
     if (strcmp(splitted[0], "cd") == 0) {
       retval = 1;
@@ -172,7 +185,7 @@ static int try_internal_cmds(Shell * self, char *command) {
 }
 /* just a temp function... */
 
-static char ** Read_cmd(char * command, char * delimiter, int * count) {
+static char ** Read_command(char * command, char * delimiter, int * count) {
   char * token;
   char * cmd;
   char ** retval = (char **)malloc(sizeof(char *)*strlen(command));

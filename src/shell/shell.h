@@ -20,6 +20,7 @@
 #include <readline/history.h>
 #include "../arguments_handling/arg_handler.h"
 #include "config.h"
+#include "command_parser.h"
 
 typedef struct Shell {
   // TODO: change it into a linked list of process

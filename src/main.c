@@ -2,6 +2,7 @@
 #include "arguments_handling/arg_handler.h"
 #include "log/log.h"
 #include "command_processor/command_processor.h"
+#include "shell/shell.h"
 
 #define ARG_COUNT 5
 #define STRING(x) (char *)x
@@ -21,6 +22,10 @@ int main(int argc, char ** argv) {
   char *wc[] = {"wc", NULL};
   char **cmd[] = {ls, log, grep, log2, wc, log3, NULL};
   loop_pipe(cmd, 1, "redir.txt");
+  Shell * shell = Shell_init();
+  Shell_configure(shell, argc, argv);
+  Shell_start(shell);
+  Shell_destroy(shell);
   //Execute_commands_with_pipe(&elem, 3);
   return 0;
 }

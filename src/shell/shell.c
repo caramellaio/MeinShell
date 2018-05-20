@@ -61,7 +61,8 @@ void Shell_main_loop(Shell *self) {
     /*parse commands */
     char ***commands = parse_line(input, &command_count,  
                                    &is_async, &has_pipe,
-                                   &is_redirect, &redirect_path);
+                                   &is_redirect, &redirect_path,
+                                   "/usr/bin/log", 12); // TODO: get log by arguments...
 
     /*execute commands */
     loop_pipe(commands, is_redirect, redirect_path); 

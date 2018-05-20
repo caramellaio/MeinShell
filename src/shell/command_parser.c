@@ -44,10 +44,12 @@ static void add_string_to_args(char ** current_args, int curr_count, char * line
                                int start, int count);
 static char ** Read_cmd(char * command, char * delimiter, int * count);
 static char ** add_command(char * line, int last, int current);
+static char **add_log(char *log_path, int log_path_size);
 
 char *** parse_line(char * line, int * length, 
                     int * is_async, int * is_pipe,
-                    int * has_redirect, char ** redirect_file) {
+                    int * has_redirect, char ** redirect_file,
+                    char * log_path, int log_path_size) {
   char curr = '\0';
   int check_enabled = 1;
   int last = 0;
@@ -64,10 +66,11 @@ char *** parse_line(char * line, int * length,
     }
     else if(check_enabled) {
       if (curr == PIPE) {
-        retval[retval_index]  = add_command(line, last, i);
+        retval[retval_index++]  = add_command(line, last, i);
+        retval[retval_index] = add_log(log_path, log_path_size);
 
-        last = i + 1;
         retval_index++;
+        last = i + 1;
         *is_pipe = 1;
       } 
       else if (curr == REDIRECT) {
@@ -76,9 +79,11 @@ char *** parse_line(char * line, int * length,
           exit(-1);
         }
 
-        retval[retval_index] = add_command(line, last, i);
-        last = i + 1;
+        retval[retval_index++] = add_command(line, last, i);
+        retval[retval_index] = add_log(log_path, log_path_size);
+        
         retval_index++;
+        last = i + 1;
         *has_redirect = 1;
       }
       else if (curr == ASYNC) {
@@ -88,7 +93,9 @@ char *** parse_line(char * line, int * length,
           exit(-1);
         }
         
-        retval[retval_index] = add_command(line, last, i);
+        retval[retval_index++] = add_command(line, last, i);
+        retval[retval_index] = add_log(log_path, log_path_size);
+
         retval_index++;
         last = i + 1;
         *is_async = 1;
@@ -101,7 +108,9 @@ char *** parse_line(char * line, int * length,
     *redirect_file = red;
   }
   else if (last != i) {
-    retval[retval_index] = add_command(line, last, i);
+    retval[retval_index++] = add_command(line, last, i);
+    retval[retval_index] = add_log(log_path, log_path_size);
+    retval_index++;
   }
   retval = (char ***)realloc(retval, sizeof(char **) * (retval_index+2));
   retval[retval_index+1] = NULL;
@@ -132,6 +141,13 @@ static char ** add_command(char * line, int last, int current) {
   return retval;
 }
 
+static char **add_log(char *log_path, int log_path_size) {
+  char **retval;
+  int count;
+
+  retval = Read_cmd(log_path, " ", &count);
+  return retval;
+}
 static void add_string_to_args(char ** current_args, int curr_count, char * line, int start, int count) {
   current_args[curr_count] = (char *)malloc(sizeof(char) * count);
   strncpy(current_args[curr_count], line+start, count - 1); // last char should not be copied.

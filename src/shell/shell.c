@@ -1,6 +1,5 @@
 #include "shell.h"
 
-static int is_absolute_path(char *path);
 static int try_internal_cmds(Shell *self, char *command);
 static char **Read_command(char *command, char *delimiter, int *size);
 
@@ -18,17 +17,18 @@ void Shell_destroy(Shell *self) {
   free(self);
   self = NULL;
 }
-int Shell_run_command(Shell *self, char *command);
 
 void Shell_start(Shell *self) {
   Shell_main_loop(self);
 }
+
 void Shell_print(Shell *self) {
   char cwd[1024];
   getcwd(cwd, sizeof(cwd));
   printf("%s> ", cwd);
   fflush(stdin);
 }
+
 void Shell_print_error(Shell *self, char *error, int do_exit) {
   fprintf(stderr, "%s%s%s\n", ANSI_COLOR_RED, error, ANSI_COLOR_RESET);
   fflush(stdin);
@@ -36,6 +36,7 @@ void Shell_print_error(Shell *self, char *error, int do_exit) {
     Shell_exit(self, EXIT_FAILURE);
   }
 }
+
 void Shell_main_loop(Shell *self) {
   char buffer[100];
   char *input;
@@ -106,6 +107,7 @@ void Shell_configure(Shell *self, int argc, char *argv) {
 
  // not yet implemented 
 }
+
 void Shell_cd(Shell *self, char *new_dir) {
   /*char cwd[1024];
   getcwd(cwd, sizeof(cwd));
@@ -138,10 +140,6 @@ void Shell_exit(Shell *self, int code) {
   printf("Shell exit with code: %d", code);
   Shell_destroy(self);
   exit(code);
-}
-
-static int is_absolute_path(char *path) {
-  return 1;
 }
 
 static int try_internal_cmds(Shell *self, char *command) {

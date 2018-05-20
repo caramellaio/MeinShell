@@ -7,6 +7,8 @@
 #define DEF_LOGGER_PATH "/usr/bin/log"
 
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 typedef struct ShellConfig {
   char *logger_path;
@@ -30,4 +32,6 @@ void ShellConfig_set_err_file(ShellConfig *self, char *err_file);
 void ShellConfig_enable_print_code(ShellConfig *self);
 
 void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size);
+
+char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err);
 #endif

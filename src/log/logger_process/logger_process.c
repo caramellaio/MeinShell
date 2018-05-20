@@ -41,13 +41,24 @@ static void log_output(Logger *self, FILE *file) {
   int value = 1;
   char buffer[BUFFER_SIZE];
 
-  while ((value = read(fileno(stdin), buffer, BUFFER_SIZE)) != 0) {
+  /*while ((value = read(fileno(stdin), buffer, BUFFER_SIZE)) != 0) {
     if (value < 0) {
       perror("Error: unable to read from stdin.");
       exit(-1);
     }
     printf("%s", buffer);
     fprintf(file, "%s", buffer);
+  }*/
+  while ( (value = read(fileno(stdin), buffer, BUFFER_SIZE)) != 0){
+    if (value < 0) {
+      perror("Error: unable to read from stdin.");
+      exit(-1);
+    }
+    char *str = (char*)malloc(value+1);
+    strncpy(str, buffer, value);
+    str[value+1]='\0';  
+    write(fileno(stdout),str,value+1);
+    free(str);
   }
 }
 

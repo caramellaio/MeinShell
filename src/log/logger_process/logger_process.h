@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <string.h>
 
 typedef struct Logger {
   char *process;

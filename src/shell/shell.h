@@ -43,5 +43,6 @@ void Shell_configure(Shell *self, int argc, char *argv);
 void Shell_cd(Shell *self, char *new_dir);
 void Shell_print_help(Shell *self);
 void Shell_kill_running_process(Shell *self);
+void Shell_on_quit_request(Shell *self);
 void Shell_exit(Shell *self, int code);
 #endif

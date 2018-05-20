@@ -183,6 +183,15 @@ static int try_internal_cmds(Shell *self, char *command) {
   }
   return retval;
 }
+
+void Shell_on_quit_request(Shell *self) {
+  if (self->running_process_pids == NO_PROCESS) {
+    Shell_exit(self, 0);
+  }
+  else {
+    Shell_kill_running_process(self);
+  }
+}
 /*just a temp function... */
 
 static char **Read_command(char *command, char *delimiter, int *count) {

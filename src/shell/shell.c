@@ -64,7 +64,7 @@ void Shell_main_loop(Shell *self) {
                                    &is_redirect, &redirect_path);
 
     /*execute commands */
-
+    loop_pipe(commands, is_redirect, redirect_path); 
     /*free dynamics strings */ 
     free_commands(commands, command_count);
     free(input);

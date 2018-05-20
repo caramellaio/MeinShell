@@ -1,6 +1,16 @@
 #include "shell/shell.h"
+#include "signal.h"
+
+static void catch_function(int signo) {
+  puts("\nKilling process\n");
+}
 
 int main(int argc, char **argv) {
+  if (signal(SIGINT, catch_function) == SIG_ERR) {
+      fputs("An error occurred while setting a signal handler.\n", stderr);
+      return 1;
+  }
+
   char *ls[] = {"ls", NULL};
   char *log[] = {"log", NULL};
   char *log2[] = {"log", NULL};

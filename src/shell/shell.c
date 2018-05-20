@@ -92,7 +92,7 @@ void Shell_configure(Shell *self, int argc, char *argv) {
                                self->config, 0, ShellConfig_enable_print_code)); 
   /*set the max size in characters of the output of every process */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), 
-                               self->config, 1, set_output_max_size)); 
+                               self, 1, set_output_max_size)); 
   /*set the logger process executable path 
   */
   ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), 

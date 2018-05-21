@@ -67,6 +67,7 @@ static void log_output(Logger *self, FILE *file) {
     strncpy(str, buffer, value);
     str[value+1]='\0';  
     write(fileno(stdout),str,value+1);
+    fprintf(file, "%s",str);
     free(str);
   }
 }

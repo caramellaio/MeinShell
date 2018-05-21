@@ -30,9 +30,10 @@ void set_err_file(void *logger_void, char *err_file) {
   Logger_set_err_file(logger, err_file);
 }
 
-void set_output_max_size(void *logger_void, int max_size){
+void set_output_max_size(void *logger_void, char *max_size){
   Logger *logger = LOGGER(logger_void);
-  Logger_set_cmd_size(logger, max_size);
+  int output_max_size = atoi(max_size);
+  Logger_set_cmd_size(logger, output_max_size);
 }
 
 void enable_print_code(void *logger_void, char *foo) {

@@ -16,6 +16,10 @@ char *** parse_line(char * line, int * length,
   int last = 0;
   int retval_index = 0;
 
+  *has_redirect = 0;
+  *is_async = 0;
+  *is_pipe = 0;
+
   char *** retval = (char ***)malloc(sizeof(char **) * 1024);
 
   int i;

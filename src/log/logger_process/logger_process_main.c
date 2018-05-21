@@ -25,6 +25,16 @@ void set_out_file(void *logger_void, char *out_file) {
   Logger_set_out_file(logger, out_file);
 }
 
+void set_err_file(void *logger_void, char *err_file) {
+  Logger *logger = LOGGER(logger_void);
+  Logger_set_err_file(logger, err_file);
+}
+
+void set_output_max_size(void *logger_void, int max_size){
+  Logger *logger = LOGGER(logger_void);
+  Logger_set_cmd_size(logger, max_size);
+}
+
 void enable_print_code(void *logger_void, char *foo) {
   Logger *logger = LOGGER(logger_void);
   Logger_enable_print_code(logger);
@@ -38,7 +48,7 @@ int main(int argc, char **argv) {
 }
 
 void get_input_opts(int argc, char **argv, Logger *logger) {
-  const int ARG_COUNT = 6;
+  const int ARG_COUNT = 8;
   ArgsHandler *args_handler = ArgsHandler_init(ARG_COUNT);
 
   ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help",
@@ -60,6 +70,15 @@ void get_input_opts(int argc, char **argv, Logger *logger) {
                                                       STRING(NULL),
                                                       logger, 1,
                                                       set_pid));
+  
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", 
+                                                      STRING(NULL), 
+                                                      logger, 1, 
+                                                      set_err_file)); 
+
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), 
+                                                      logger, 1, 
+                                                      set_output_max_size));
 
   ArgsHandler_insert_arguments(args_handler, Arg_init("-c", "--code",
                                                       STRING(NULL),

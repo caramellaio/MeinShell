@@ -16,7 +16,7 @@ typedef struct Logger {
   char *process;
   char *sub_process;
   char *out_file;
-  char *err_file;
+  int is_err;
   int code;
   int print_code;
   int pid;
@@ -28,7 +28,7 @@ void Logger_set_code(Logger *self, int code);
 void Logger_enable_print_code(Logger *self);
 void Logger_set_pid(Logger *self, int pid);
 void Logger_set_out_file(Logger *self, char *outfile);
-void Logger_set_err_file(Logger *self, char *errfile);
+void Logger_set_err_true(Logger *self);
 void Logger_set_cmd_size(Logger *self, int value);
 void Logger_set_process(Logger *self, char *process);
 void Logger_set_sub_process(Logger *self, char *subprocess);

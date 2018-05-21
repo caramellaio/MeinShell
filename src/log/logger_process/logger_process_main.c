@@ -25,9 +25,9 @@ void set_out_file(void *logger_void, char *out_file) {
   Logger_set_out_file(logger, out_file);
 }
 
-void set_err_file(void *logger_void, char *err_file) {
+void set_err_true(void *logger_void) {
   Logger *logger = LOGGER(logger_void);
-  Logger_set_err_file(logger, err_file);
+  Logger_set_err_true(logger);
 }
 
 void set_output_max_size(void *logger_void, char *max_size){
@@ -72,10 +72,10 @@ void get_input_opts(int argc, char **argv, Logger *logger) {
                                                       logger, 1,
                                                       set_pid));
   
-  ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", 
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--is-err", 
                                                       STRING(NULL), 
-                                                      logger, 1, 
-                                                      set_err_file)); 
+                                                      logger, 0, 
+                                                      set_err_true)); 
 
   ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), 
                                                       logger, 1, 

@@ -33,5 +33,6 @@ void ShellConfig_enable_print_code(ShellConfig *self);
 
 void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size);
 
-char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err);
+char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid,
+                                         int code, char * input, char **command);
 #endif

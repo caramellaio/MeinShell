@@ -1,7 +1,7 @@
 #ifndef __LOGGER__PROCESS__H__
 #define __LOGGER__PROCESS__H__
 #define LOGGER(x) ((Logger *)x)
-#define LOGGER_ALLOC(x) ((Logger *)malloc(sizeof(Logger *) * x))
+#define LOGGER_ALLOC(x) ((Logger *)malloc(sizeof(Logger) * x))
 #define BUFFER_SIZE 80
 #define STRING(x) (char *)x
 

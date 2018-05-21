@@ -51,9 +51,12 @@ void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size) {
 char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid,
                                          int code, char * input, char **command) {
   char buffer[512];
-  char command_str[512];
+  char *command_str;
   char *retval;
   int retval_size;
+
+  command_str = (char *)malloc(sizeof(char)*512);
+  string_array_to_string(command, &command_str);
 
   if (self->print_code) {
     sprintf(buffer, "%s -o %s -m %d -n %s -s %s -p %d -C -c %d\0", 
@@ -77,10 +80,21 @@ char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid,
 }
 
 static void string_array_to_string(char **array, char **out) {
+  int total_size;
+
+  total_size = get_str_size(*array);  
+  strncpy(*out, *array, total_size);
+  array++;
+
   while (*array != NULL) {
+    total_size += get_str_size(*array);
     strcat(*out, *array);
     array++;
   }
+
+  *out = realloc(*out, sizeof(char) * total_size + 1);
+
+  (*out)[total_size] = '\0';
 }
 static int get_str_size(char *string) {
   int i;

@@ -20,7 +20,7 @@ char *** parse_line(char * line, int * length,
   *is_async = 0;
   *is_pipe = 0;
 
-  char *** retval = (char ***)malloc(sizeof(char **) * 1024);
+  char *** retval = (char ***)calloc(sizeof(char **), 1024);
 
   int i;
   for (i = 0; line[i] != EOF && line[i] != '\0'; i++) {
@@ -75,7 +75,6 @@ char *** parse_line(char * line, int * length,
   else if (last != i) {
     retval[retval_index++] = add_command(line, last, i);
     retval[retval_index] = add_log(log_path, log_path_size);
-    retval_index++;
   }
   retval = (char ***)realloc(retval, sizeof(char **) * (retval_index+2));
   retval[retval_index+1] = NULL;

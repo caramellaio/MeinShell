@@ -1,42 +1,3 @@
-/*char ***parse_line(char *line, int * lenght,
-                  int *is_async, int *is_pipe, 
-                  int * has_redirect, char ** redirect_file) {
-  char ** retval;
-  
-  int count;
-  retval = Read_command(line, REDIRECT, &count);
-
-  if (redir_c > 2) {
-    fprintf(stderr, "%sError: wrong number of redirect operators.%s.\n", ANSI_COLOR_RED, ANSI_COLOR_RESTORE);
-    return NULL;
-  }
-
-  if (redir_c == 2) {
-    *redirect_file = retval[1];
-    char * tmp = retval[0];
-    free(retval);
-    retval = parse_line(retval[0], length, is_async, 
-                        is_pipe, has_redirect, NULL);
-    *has_redirect = 1;
-  }
-  else {
-    has_redirect = 0;
-    free(retval);
-  }
-
-  retval = Read_command(line, ASYNC, &count);
-  if (count == 2) {
-    char * tmp = retval[0];
-    free(retval);
-    retval = parse_line(tmp, length, is_async,
-                        is_pipe, has_redirect, NULL);
-  }
-  
-  free(retval);
-  retval = Read_command(line, PIPE, &count);
-  free(retval);
-}*/
-
 #include "command_parser.h"
 
 static char ** resize_args(char ** string, int count);
@@ -104,7 +65,7 @@ char *** parse_line(char * line, int * length,
   }
 
   if (*has_redirect) {
-    char * red = add_command(line, last, i);
+    char *red = *add_command(line, last, i);
     *redirect_file = red;
   }
   else if (last != i) {
@@ -117,9 +78,6 @@ char *** parse_line(char * line, int * length,
 
   return retval;
 }
-// TODO: free line strings...
-
-//char ** string_list_copy(char ** current_args, 
 
 void free_commands(char *** commands, int length) {
   
@@ -148,6 +106,7 @@ static char **add_log(char *log_path, int log_path_size) {
   retval = Read_cmd(log_path, " ", &count);
   return retval;
 }
+
 static void add_string_to_args(char ** current_args, int curr_count, char * line, int start, int count) {
   current_args[curr_count] = (char *)malloc(sizeof(char) * count);
   strncpy(current_args[curr_count], line+start, count - 1); // last char should not be copied.

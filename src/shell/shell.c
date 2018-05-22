@@ -32,7 +32,7 @@ void Shell_print(Shell *self) {
 
 void Shell_print_error(Shell *self, char *error, int do_exit) {
   fprintf(stderr, "%s%s%s\n", ANSI_COLOR_RED, error, ANSI_COLOR_RESET);
-  fflush(stdin);
+
   if (do_exit) {
     Shell_exit(self, EXIT_FAILURE);
   }
@@ -52,6 +52,7 @@ void Shell_main_loop(Shell *self) {
   for (;;) {
     /*read input */
     snprintf(buffer, sizeof(buffer), "%s:%s $ ", getenv("USER"), getcwd(NULL, 1024));
+    fflush(stdout);
     input = readline(buffer);
     if (!input)
       break;
@@ -64,14 +65,23 @@ void Shell_main_loop(Shell *self) {
     char ***commands = parse_line(input, &command_count,  
                                    &is_async, &has_pipe,
                                    &is_redirect, &redirect_path,
-                                   "/usr/bin/log", 12); // TODO: get log by arguments...
+                                   "log", 3); // TODO: get log by arguments...
 
+    self->executing_line = input;
     /*execute commands */
-    loop_pipe(commands, is_redirect, redirect_path); 
+    loop_pipe(commands, is_redirect, redirect_path, self); 
     /*free dynamics strings */ 
     free_commands(commands, command_count);
     free(input);
   }
+}
+void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, char **cmd_args, char ***out) {
+  char * str;
+  int foo;
+
+  ShellConfig_get_logger_call_string(self->config, is_err, pid, code, 
+                                     self->executing_line, cmd_args, &str);
+  *out = Read_command(str, " ", &foo);
 }
 
 void Shell_configure(Shell *self, int argc, char *argv) {
@@ -105,8 +115,6 @@ void Shell_configure(Shell *self, int argc, char *argv) {
   if (result == -1) {
     Shell_print_error(self, "Invalid argument passing...", 1); 
   }
-
- // not yet implemented 
 }
 
 void Shell_cd(Shell *self, char *new_dir) {
@@ -217,7 +225,9 @@ static char **Read_command(char *command, char *delimiter, int *count) {
     i++;
   }
 
-  retval = realloc(retval, sizeof(char *) * i);
+  retval = realloc(retval, sizeof(char *) * (i + 1));
   *count = i; 
+  /* array terminator */
+  retval[i] = NULL;
   return retval;
 }

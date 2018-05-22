@@ -27,7 +27,7 @@ typedef struct Shell {
 
   /* changes on runtime */
   int running_process_pids;
-
+  char *executing_line;
   ShellConfig *config;
   /* given at the beginning */
 } Shell;
@@ -44,5 +44,7 @@ void Shell_cd(Shell *self, char *new_dir);
 void Shell_print_help(Shell *self);
 void Shell_kill_running_process(Shell *self);
 void Shell_on_quit_request(Shell *self);
+void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, 
+                          char **cmd_args, char ***out);
 void Shell_exit(Shell *self, int code);
 #endif

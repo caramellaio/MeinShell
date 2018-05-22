@@ -8,8 +8,8 @@ ShellConfig *ShellConfig_init() {
 
   retval = (ShellConfig *)malloc(sizeof(ShellConfig));
 
-  retval->out_file = "";
-  retval->err_file = "";
+  retval->out_file = "out.txt";
+  retval->err_file = "err.txt";
 
   ShellConfig_set_out_file(retval, DEF_OUT_FILE);
   ShellConfig_set_err_file(retval, DEF_ERR_FILE);
@@ -48,35 +48,37 @@ void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size) {
   self->output_max_size = out_max_size;
 }
 
-char *ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid,
-                                         int code, char * input, char **command) {
-  char buffer[512];
+void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, int code, 
+                                        char * input, char **command, char **out) {
+  char *buffer;
   char *command_str;
-  char *retval;
-  int retval_size;
+  int out_size;
 
-  command_str = (char *)malloc(sizeof(char)*512);
+  command_str = (char *)malloc(sizeof(char) * 512);
+  buffer = (char *)malloc(sizeof(char) * 512);
+
   string_array_to_string(command, &command_str);
 
   if (self->print_code) {
-    sprintf(buffer, "%s -o %s -m %d -n %s -s %s -p %d -C -c %d\0", 
+    sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -C -c %d\0", 
             self->logger_path, is_err ? self->err_file : self->out_file,
             self->output_max_size, input, command_str, pid, code);
   }
   else {
-    sprintf(buffer, "%s -o %s -m %d -n %s -s %s -p %d\0", 
+    sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d\0", 
             self->logger_path, is_err ? self->err_file : self->out_file,
             self->output_max_size, input, command_str, pid);
   }
 
-  retval_size = get_str_size(buffer);
+  out_size = get_str_size(buffer);
 
-  retval = (char *)malloc(sizeof(char)*retval_size+1);
+  *out = (char *)malloc(sizeof(char) * out_size+1);
 
-  strncpy(retval, buffer, retval_size);
-  retval[retval_size] = '\0';
-  
-  return retval;
+  strncpy(*out, buffer, out_size);
+
+  free(buffer);
+
+  (*out)[out_size] = '\0';
 }
 
 static void string_array_to_string(char **array, char **out) {

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../shell/shell.h"
+#include <wait.h>
 #include <errno.h>
 
 #define READ 0

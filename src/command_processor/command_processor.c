@@ -68,7 +68,7 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
 
       char **log_args;
       if (strcmp(*cmd[0], LOG) == 0) {
-        Shell_get_logger_str(log_args, 0, pid, code, *(cmd-1), &log_args);
+        Shell_get_logger_str(shell, 0, pid, code, *(cmd-1), &log_args);
       }
       if ((pid = fork()) == -1)
         {
@@ -91,7 +91,7 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
         }
       else
         {
-          waitpid(&pid, &code, 0);
+          waitpid(pid, &code, 0);
           char ** logger;
           
           Shell_get_logger_str(shell, 0, last_pid, code, *(cmd), &logger);
@@ -119,7 +119,7 @@ static void call_log_process(Shell *shell, int is_err, int pid, int code, char *
 
   perror("I am going to call log processor (!!!) ");
   fprintf(stderr, "command is %s", command[0]);
-  Shell_get_logger_str(log_args, is_err, pid, code, command, &log_args);
+  Shell_get_logger_str(shell, is_err, pid, code, command, &log_args);
   perror("Running log process.\n");
   execvp(log_args[0], log_args);
 

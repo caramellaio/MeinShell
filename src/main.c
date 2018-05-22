@@ -1,8 +1,13 @@
 #include "shell/shell.h"
 #include "signal.h"
 
+Shell *shell;
+
 static void catch_function(int signo) {
-  puts("\nKilling process\n");
+  if (NULL == shell)
+    exit(0);
+
+  Shell_on_quit_request(shell, signo);
 }
 
 int main(int argc, char **argv) {
@@ -11,10 +16,9 @@ int main(int argc, char **argv) {
       return 1;
   }
 
-  Shell * shell = Shell_init();
+  shell = Shell_init();
   Shell_configure(shell, argc, argv);
   Shell_start(shell);
   Shell_destroy(shell);
-  //Execute_commands_with_pipe(&elem, 3);
   return 0;
 }

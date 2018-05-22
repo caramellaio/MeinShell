@@ -99,7 +99,9 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
         }
       else
         {
+          Shell_set_running_process(shell, pid);
           waitpid(pid, &code, 0);
+          Shell_set_running_process(shell, NO_PROCESS);
           char ** logger;
           close(p[1]);
           

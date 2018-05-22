@@ -86,7 +86,7 @@ void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, char **cm
   *out = split_ignoring_char(str, ' ', '"');
 }
 
-void Shell_configure(Shell *self, int argc, char *argv) {
+void Shell_configure(Shell *self, int argc, char **argv) {
   int result;
   
   ArgsHandler *args_handler = ArgsHandler_init(6);
@@ -197,13 +197,17 @@ static int try_internal_cmds(Shell *self, char *command) {
   return retval;
 }
 
-void Shell_on_quit_request(Shell *self) {
+void Shell_on_quit_request(Shell *self, int signo) {
   if (self->running_process_pids == NO_PROCESS) {
     Shell_exit(self, 0);
   }
   else {
     Shell_kill_running_process(self);
   }
+}
+
+void Shell_set_running_process(Shell *self, int pid) {
+  self->running_process_pids = pid;
 }
 
 static void set_output_max_size(Shell *self, char *val) {

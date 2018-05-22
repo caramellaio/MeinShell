@@ -39,12 +39,13 @@ void Shell_start(Shell *self);
 void Shell_print(Shell *self);
 void Shell_print_error(Shell *self, char *error, int do_exit);
 void Shell_main_loop(Shell *self);
-void Shell_configure(Shell *self, int argc, char *argv);
+void Shell_configure(Shell *self, int argc, char **argv);
 void Shell_cd(Shell *self, char *new_dir);
 void Shell_print_help(Shell *self);
 void Shell_kill_running_process(Shell *self);
-void Shell_on_quit_request(Shell *self);
+void Shell_on_quit_request(Shell *self, int signo);
 void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, 
                           char **cmd_args, char ***out);
+void Shell_set_running_process(Shell *self, int pid);
 void Shell_exit(Shell *self, int code);
 #endif

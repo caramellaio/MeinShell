@@ -1,11 +1,12 @@
 #include "command_parser.h"
 
 static char ** resize_args(char ** string, int count);
-static void add_string_to_args(char ** current_args, int curr_count, char * line,
-                               int start, int count);
-static char ** Read_cmd(char * command, char * delimiter, int * count);
+static void add_string_to_args(char ** current_args, int curr_count, 
+                               char * line, int start, int count);
 static char ** add_command(char * line, int last, int current);
 static char **add_log(char *log_path, int log_path_size);
+static char **split_ignoring_char(char *command, char delimiter, 
+                                  char ignore);
 
 char *** parse_line(char * line, int * length, 
                     int * is_async, int * is_pipe,
@@ -93,10 +94,16 @@ static char ** add_command(char * line, int last, int current) {
   char * copy = (char *)malloc(sizeof(char) * (current-last+1));
   char ** retval;
   int count;
-  strncpy(copy, line+last, current - last); 
+  int i = 0;
+
+  /* it is mandatory to trim the string in the left part. */
+  while (isspace((unsigned char)(*(line + last + i)))) {
+    i++;
+  }
+  strncpy(copy, line+last+i, current - last); 
   copy[current-last] = '\0';
 
-  retval = Read_cmd(copy, " ", &count);
+  retval = split_ignoring_char(copy, ARG_SEPARATOR, LITERAL_SEP);
   
   free(copy);
   return retval;
@@ -106,7 +113,7 @@ static char **add_log(char *log_path, int log_path_size) {
   char **retval;
   int count;
 
-  retval = Read_cmd(log_path, " ", &count);
+  retval = split_ignoring_char(log_path, ARG_SEPARATOR, LITERAL_SEP);
   return retval;
 }
 
@@ -125,23 +132,40 @@ static char ** resize_args(char ** string, int count) {
   return tmp;
 }
 
-static char ** Read_cmd(char * command, char * delimiter, int * count) {
-  char * token;
-  char * cmd;
-  char ** retval = (char **)malloc(sizeof(char *)*strlen(command));
-  int i = 1;
-  
-  cmd = strdup(command);
-  token = strtok(cmd, delimiter);
-  retval[0] = token;
+static char **split_ignoring_char(char *command, char delimiter, 
+                                  char ignore) {
+  char **retval = (char **)malloc(sizeof(char *)*strlen(command));
+  char curr;
+  int last = 0;
+  int check_enabled = 1;
+  int index = 0;
+  int i;
+  for (i = 0; command[i] != EOF && command[i] != '\0'; i++) {
+    curr = command[i];
 
-  while (token = strtok(0, delimiter)) {  
-    retval[i] = token;
-    i++;
+    if (curr == ignore) {
+     check_enabled = !check_enabled; 
+    }
+    
+    if (check_enabled && curr == delimiter) {
+      retval[index] = (char *)malloc(sizeof(char) * (i - last + 1)); 
+      strncpy(retval[index], command + last, i - last); 
+      retval[index][i-last] = '\0';
+      index++;
+      last = i + 1;
+    }
   }
 
-  retval = realloc(retval, sizeof(char *) * (i+1));
-  retval[i] = NULL;
-  *count = i; 
+  if (last < i) {
+    char *copy = (char *)malloc(sizeof(char) * (i - last + 1));
+    strncpy(copy, command + last, i - last);
+    copy[i-last] = '\0';
+    retval[index] = copy;
+    index++;
+    last = i;
+  }
+
+  retval = (char **)realloc(retval, sizeof(char *) * (index+1));
+  retval[index] = NULL;
   return retval;
 }

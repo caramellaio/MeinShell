@@ -3,6 +3,8 @@
 static int try_internal_cmds(Shell *self, char *command);
 static char **Read_command(char *command, char *delimiter, int *size);
 static void set_output_max_size(Shell *self, char *val);
+static char **split_ignoring_char(char *command, char delimiter, 
+                                  char ignore);
 
 Shell *Shell_init() {
   Shell *retval; 
@@ -81,7 +83,7 @@ void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, char **cm
 
   ShellConfig_get_logger_call_string(self->config, is_err, pid, code, 
                                      self->executing_line, cmd_args, &str);
-  *out = Read_command(str, " ", &foo);
+  *out = split_ignoring_char(str, ' ', '"');
 }
 
 void Shell_configure(Shell *self, int argc, char *argv) {
@@ -140,10 +142,12 @@ void Shell_cd(Shell *self, char *new_dir) {
 void Shell_print_help(Shell *self) {
   printf("print command has not been implemented yet.\n");
 }
+
 void Shell_kill_running_process(Shell *self) {
   if (self->running_process_pids != NO_PROCESS)
     kill(self->running_process_pids, SIGKILL);
 }
+
 void Shell_exit(Shell *self, int code) {
   Shell_kill_running_process(self);
   printf("Shell exit with code: %d", code);
@@ -210,6 +214,43 @@ static void set_output_max_size(Shell *self, char *val) {
   ShellConfig_set_output_max_size(self->config, m_size);
 }
 
+static char **split_ignoring_char(char *command, char delimiter, 
+                                  char ignore) {
+  char **retval = (char **)malloc(sizeof(char *)*strlen(command));
+  char curr;
+  int last = 0;
+  int check_enabled = 1;
+  int index = 0;
+  int i;
+  for (i = 0; command[i] != EOF && command[i] != '\0'; i++) {
+    curr = command[i];
+
+    if (curr == ignore) {
+     check_enabled = !check_enabled; 
+    }
+    
+    if (check_enabled && curr == delimiter) {
+      retval[index] = (char *)malloc(sizeof(char) * (i - last + 1)); 
+      strncpy(retval[index], command + last, i - last); 
+      retval[index][i-last] = '\0';
+      index++;
+      last = i + 1;
+    }
+  }
+
+  if (last < i) {
+    char *copy = (char *)malloc(sizeof(char) * (i - last + 1));
+    strncpy(copy, command + last, i - last);
+    copy[i-last] = '\0';
+    retval[index] = copy;
+    index++;
+    last = i;
+  }
+
+  retval = (char **)realloc(retval, sizeof(char *) * (index+1));
+  retval[index] = NULL;
+  return retval;
+}
 static char **Read_command(char *command, char *delimiter, int *count) {
   char *token;
   char *cmd;

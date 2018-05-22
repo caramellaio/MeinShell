@@ -66,6 +66,11 @@ void get_input_opts(int argc, char **argv, Logger *logger) {
                                                       STRING(NULL),
                                                       logger, 1,
                                                       Logger_set_process));
+  
+  ArgsHandler_insert_arguments(args_handler, Arg_init("-s", "--sub-process-name",
+                                                      STRING(NULL),
+                                                      logger, 1,
+                                                      Logger_set_sub_process));
 
   ArgsHandler_insert_arguments(args_handler, Arg_init("-p", "--pid",
                                                       STRING(NULL),

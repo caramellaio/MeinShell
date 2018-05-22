@@ -31,7 +31,7 @@ void Logger_set_out_file(Logger *self, char *outfile);
 void Logger_set_err_true(Logger *self);
 void Logger_set_cmd_size(Logger *self, int value);
 void Logger_set_process(Logger *self, char *process);
-void Logger_set_sub_process(Logger *self, char *subprocess);
+void Logger_set_sub_process(Logger *self, char *sub_process);
 void Logger_destroy(Logger *self);
 
 void Logger_process_run();

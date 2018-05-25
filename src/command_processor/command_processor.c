@@ -102,7 +102,7 @@ void loop_pipe(char ***cmd, int redirect, char *redirect_file, Shell *shell) {
       close(err_p[WRITE]);
       //Execute commands
       execvp((*cmd)[0], *cmd);
-      fprintf(stderr, "process %s failed!", (*cmd[0]));
+      fprintf(stderr, "process %s failed!\n", (*cmd[0]));
       exit(errno);
     }
     else {

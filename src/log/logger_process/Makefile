@@ -1,6 +1,7 @@
 CC=gcc
 
-CFLAGS= -Wall -Wextra -g
+#CFLAGS= -Wall -Wextra -g
+CFLAGS= -w
 
 arg.o: ../../arguments_handling/arg.c ../../arguments_handling/arg.h
 	$(CC) -c ../../arguments_handling/arg.c $(CFLAGS)

@@ -9,7 +9,8 @@ ArgsHandler *ArgsHandler_init(int count) {
 }
 
 void ArgsHandler_destroy(ArgsHandler *self) {
-  for (int i = 0; i < self->count; i++)
+  int i;
+  for (i = 0; i < self->count; i++)
     Arg_destroy(self->arg_list[i]);
   free(self);
 }
@@ -22,13 +23,15 @@ void ArgsHandler_destroy(ArgsHandler *self) {
 int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
   int retval = 0;
   //argv[0] is the program name
-  for (int i = 1; i < argc && retval != -1; i++) {
+  int i;
+  int j;
+  for (i = 1; i < argc && retval != -1; i++) {
     int found = 0;
     char *arg_str;
     
     arg_str = argv[i];
 
-    for (int j = 0; j < self->count && found == 0 && retval != -1; j++) {
+    for (j = 0; j < self->count && found == 0 && retval != -1; j++) {
       Arg *arg = NULL;
       arg = self->arg_list[j];
 
@@ -83,7 +86,8 @@ int ArgsHandler_insert_arguments(ArgsHandler *self, Arg *arg) {
 }
 
 void ArgsHandler_print(ArgsHandler *self) {
-  for (int i = 0; i < self->count; i++) {
+  int i;
+  for (i = 0; i < self->count; i++) {
     Arg_print(self->arg_list[i]);
     printf("\n");
   }

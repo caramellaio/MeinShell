@@ -94,8 +94,8 @@ char *** parse_line(char * line, int * length,
 }
 
 void free_commands(char *** commands, int length) {
-  
-  for (int i = 0; i < length; i++)
+  int i;
+  for (i = 0; i < length; i++)
     free(commands[i]);
   free(commands);
 }

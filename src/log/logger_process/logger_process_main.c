@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
 //Set the options for the logger
 void get_input_opts(int argc, char **argv, Logger *logger) {
-  const int ARG_COUNT = 8;
+  const int ARG_COUNT = 9;
   ArgsHandler *args_handler = ArgsHandler_init(ARG_COUNT);
 
   ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help",

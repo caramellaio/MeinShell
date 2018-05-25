@@ -14,14 +14,14 @@ void ArgsHandler_destroy(ArgsHandler *self) {
   free(self);
 }
 
-/*
-  returns 1 if it find at least an arg, 0 if not and -1 if there
-  is an error
-*/
-
+/// <summary>Returns 1 if it find at least an arg, 0 if not and -1 if there is an error
+/// <para name="self">ArgsHandler</para>
+/// <para name="argc">Arguments count</para>
+/// <para name="argv">Arguments vector</para>
+/// </summary>
 int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
   int retval = 0;
-  // argv[0] is the program name
+  //argv[0] is the program name
   for (int i = 1; i < argc && retval != -1; i++) {
     int found = 0;
     char *arg_str;
@@ -32,9 +32,7 @@ int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
       Arg *arg = NULL;
       arg = self->arg_list[j];
 
-      /*
-        Argument is not an argument name when it should.
-      */
+      //Argument is not an argument name when it should
       if (!Arg_can_be_arg_name(arg_str)) {
         retval = -1;
         fprintf(stderr, "Error: %s is not an argument name.\n", arg_str);
@@ -43,9 +41,7 @@ int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
       else {
         if (Arg_strcmp(arg, argv[i])) {
           if (Arg_has_arg(arg)) {
-            /* 
-              USER INPUT error handling
-            */
+            //USER INPUT error handling
             if (argc == i + 1) {
               retval = -1;
               printf("Error: %s requires a parameter but is the last string.\n", arg_str);
@@ -55,11 +51,9 @@ int ArgsHandler_handle_input(ArgsHandler *self, int argc, char **argv) {
               printf("Error: %s is a parameter name but has been handled as parameter value.\n", argv[i + 1]);
             }
             else {
-              /*
-                everything is fine
-              */
+              //Everything is fine
               arg->arg = argv[i + 1];
-              // the next element in the list is the parameter
+              //The next element in the list is the parameter
               i++;
             }
           }

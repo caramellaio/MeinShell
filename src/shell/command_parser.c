@@ -8,6 +8,16 @@ static char **add_log(char *log_path, int log_path_size);
 static char **split_ignoring_char(char *command, char delimiter, 
                                   char ignore);
 
+/// <summary>Parse the line (command log command log...)
+/// <para name="line">Line to parse</para>
+/// <para name="length">Line length</para>
+/// <para name="is_async">Check if is async</para>
+/// <para name="is_pipe">Check if is pipe</para>
+/// <para name="has_redirect">Check if there is a redirection</para>
+/// <para name="redirect_file">Redirect file</para>
+/// <para name="log_path">Path of the logger</para>
+/// <para name="log_path_size">Size of the path</para>
+/// </summary>
 char *** parse_line(char * line, int * length, 
                     int * is_async, int * is_pipe,
                     int * has_redirect, char ** redirect_file,
@@ -90,6 +100,7 @@ void free_commands(char *** commands, int length) {
   free(commands);
 }
 
+//Add command to the line
 static char ** add_command(char * line, int last, int current) {
   char * copy = (char *)malloc(sizeof(char) * (current-last+1));
   char ** retval;
@@ -109,6 +120,7 @@ static char ** add_command(char * line, int last, int current) {
   return retval;
 }
 
+//Add logger to the line
 static char **add_log(char *log_path, int log_path_size) {
   char **retval;
   int count;
@@ -132,6 +144,7 @@ static char ** resize_args(char ** string, int count) {
   return tmp;
 }
 
+//Ignore some char
 static char **split_ignoring_char(char *command, char delimiter, 
                                   char ignore) {
   char **retval = (char **)malloc(sizeof(char *)*strlen(command));

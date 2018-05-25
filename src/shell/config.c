@@ -3,6 +3,7 @@
 static int get_str_size(char *string);
 static void string_array_to_string(char **array, char **out);
 
+//Initialization of the shell
 ShellConfig *ShellConfig_init() {
   ShellConfig *retval;
 
@@ -48,6 +49,7 @@ void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size) {
   self->output_max_size = out_max_size;
 }
 
+//Get the string to pass to the logger
 void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, int code, 
                                         char * input, char **command, char **out) {
   char *buffer;
@@ -60,11 +62,13 @@ void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, 
   string_array_to_string(command, &command_str);
 
   if (self->print_code) {
+    //String with the exit code
     sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -C -c %d\0", 
             self->logger_path, is_err ? self->err_file : self->out_file,
             self->output_max_size, input, command_str, pid, code);
   }
   else {
+    //String without the exit code
     sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d\0", 
             self->logger_path, is_err ? self->err_file : self->out_file,
             self->output_max_size, input, command_str, pid);
@@ -81,6 +85,7 @@ void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, 
   (*out)[out_size] = '\0';
 }
 
+//Get the string from the array
 static void string_array_to_string(char **array, char **out) {
   int total_size;
 
@@ -98,6 +103,7 @@ static void string_array_to_string(char **array, char **out) {
 
   (*out)[total_size] = '\0';
 }
+
 static int get_str_size(char *string) {
   int i;
   for (i = 0; string[i] != EOF && string[i] != '\0' && string[i] != NULL; i++);

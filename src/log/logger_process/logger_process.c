@@ -12,6 +12,7 @@ void Logger_process_run(Logger *logger) {
   Logger_destroy(logger);
 }
 
+//Log the header and the output
 void Logger_log(Logger *self) {
   FILE *out = fopen(self->out_file, "a+");
 

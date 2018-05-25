@@ -3,6 +3,7 @@
 
 Shell *shell;
 
+//Catch the interrupt signal
 static void catch_function(int signo) {
   if (NULL == shell)
     exit(0);

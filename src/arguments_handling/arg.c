@@ -1,5 +1,13 @@
 #include "arg.h"
 
+/// <summary>Initialize args
+/// <para name="short_name">Short name(es. -o)</para>
+/// <para name="name">Name(es. --output)</para>
+/// <para name="arg">Arg for the function</para>
+/// <para name="caller">Caller</para>
+/// <para name="has_arg">If the function has an arg</para>
+/// <para name="func">Function to call</para>
+/// </summary>
 Arg *Arg_init(char *short_name, char *name, void *arg, void *caller, int has_arg, Func func) {
   Arg *self = (Arg *)malloc(sizeof(Arg));
   self->short_name = short_name;
@@ -36,6 +44,7 @@ void Arg_print(Arg *self) {
   printf("option %s | %s, has_arg=%d", self->name, self->short_name, self->has_arg);
 }
 
+//Check if the string is a name or short_name
 int Arg_strcmp(Arg *self, char *str) {
   char *short_name = Arg_get_short_name(self);
   char *name = Arg_get_name(self);

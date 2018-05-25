@@ -2,6 +2,7 @@
 
 static void call_log_process(Shell *shell, int is_err, int pid, int code, char **command);
 
+//Read commands and splits into a vector
 char ** Read_command(char * command, char * delimiter, int * count) {
   char * token;
   char * cmd;
@@ -29,13 +30,11 @@ char *** parse_command_to_commands(char * command, char ** args) {
   return NULL;
 }
 
-/**
- * @unused
-**/
+//UNUSED
 void Execute_single_command(char * command, char ** args, int redirect) {
   char *** commands = parse_command_to_commands(command, args);
   if (!redirect) {
-    loop_pipe(commands, NULL, NULL);
+    loop_pipe(commands, NULL, NULL, NULL);
   }
   else {
     /*
@@ -46,6 +45,12 @@ void Execute_single_command(char * command, char ** args, int redirect) {
   }
 }
 
+/// <summary>Execute command and log the output
+/// <para name="***cmd">Commands</para>
+/// <para name="redirect">If the output is redirected to a file</para>
+/// <para name="redirect_file">File name</para>
+/// <para name="shell">Shell</para>
+/// </summary>
 void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell) 
 {
   int stdin_fd_cp;
@@ -65,10 +70,14 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
   }
   while (*cmd != NULL)
     {
+      //Pipe for output
       pipe(p);
+      //Pipe for error
       pipe(err_p);
       char **log_args;
       if (strcmp(*cmd[0], LOG) == 0) {
+        //code = WEXITSTATUS(code);
+        //Get parameters for logger
         Shell_get_logger_str(shell, 0, pid, code, *(cmd-1), &log_args);
       }
       if ((pid = fork()) == -1)
@@ -77,15 +86,18 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
         }
       else if (pid == 0)
         {
-          dup2(fd_in, 0); //change the input according to the old one 
+          //Change the input according to the old one
+          dup2(fd_in, 0); 
           if (*(cmd + 1) != NULL || redirect)
             dup2(p[1], 1);
           close(p[0]);
+          //Check if is necessary to log
           if (strcmp((*cmd)[0] , LOG) == 0) {
             close(err_p[READ]);
             close(err_p[WRITE]);
+            //execute logger
             execvp(log_args[0], log_args);
-            /* this error cannot be tollerated */
+            //This error cannot be tollerated
             Shell_print_error(shell, "logger failed.", 1);
             exit(-1);
           }
@@ -93,12 +105,14 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
           dup2(err_p[WRITE], fileno(stderr));
           close(err_p[READ]);
           close(err_p[WRITE]);
+          //Execute commands
           execvp((*cmd)[0], *cmd);
           fprintf(stderr, "process %s failed!",(*cmd[0]));
           exit(errno);
         }
       else
         {
+          //Setting the running process
           Shell_set_running_process(shell, pid);
           waitpid(pid, &code, 0);
           Shell_set_running_process(shell, NO_PROCESS);
@@ -108,17 +122,18 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
           if (strcmp(*cmd[0], LOG) != 0) {
             int err_pid;
 
+            //Fork for the error
             if ((err_pid = fork()) == -1) {
               Shell_print_error(shell, "Error: unable to fork, aborting", 1);
             }
-
             if (err_pid == 0) {
               dup2(err_p[READ], fileno(stdin));
               close(err_p[READ]);
               close(err_p[WRITE]);
+              //code = WEXITSTATUS(code);
               Shell_get_logger_str(shell, 1, pid, code, *cmd, &log_args);
               execvp(log_args[0], log_args);
-              // should trigger internal error
+              //Should trigger internal error
               Shell_print_error(shell, "Error: error logging failed.", 1); 
             }
             else {
@@ -132,10 +147,12 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
             last_pid = pid;
           }
           if (redirect && *(cmd+1) == NULL) {
+            //Last command to log
             dup2(p[0], fileno(stdin));
             Util_write_to_file(redirect_f);
           }
-          fd_in = p[0]; //save the input for the next command
+          //Save the input for the next command
+          fd_in = p[0];
           cmd++;
         }
     }
@@ -145,6 +162,7 @@ void loop_pipe(char ***cmd, int redirect, char * redirect_file, Shell * shell)
   fflush(stdout);
 }
 
+//Execute log process - UNUSED
 static void call_log_process(Shell *shell, int is_err, int pid, int code, char **command) {
   char **log_args;
 
@@ -157,6 +175,7 @@ static void call_log_process(Shell *shell, int is_err, int pid, int code, char *
   Shell_print_error(shell, "Error: logger process failed.\n", 1);
 } 
 
+//Write to file from the stdin
 void Util_write_to_file(FILE * file) {
   char buffer[1];
   while (read(fileno(stdin), buffer, 1)) {

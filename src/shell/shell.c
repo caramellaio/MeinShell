@@ -15,6 +15,7 @@ Shell *Shell_init() {
 
   return retval;
 }
+
 void Shell_destroy(Shell *self) {
   ShellConfig_destroy(self->config);
   free(self);
@@ -40,11 +41,12 @@ void Shell_print_error(Shell *self, char *error, int do_exit) {
   }
 }
 
+//Execute the interactive shell
 void Shell_main_loop(Shell *self) {
   char buffer[100];
   char *input;
 
-  /*command handling */
+  //Command handling
   char redirect_path[100];
   int command_count = 0;
   int is_redirect = 0;
@@ -52,31 +54,33 @@ void Shell_main_loop(Shell *self) {
   int is_async = 0;
 
   for (;;) {
-    /*read input */
+    //Read input
     snprintf(buffer, sizeof(buffer), "%s:%s $ ", getenv("USER"), getcwd(NULL, 1024));
     fflush(stdout);
     input = readline(buffer);
     if (!input)
       break;
 
-    /*try built in commands */
+    //Try built in commands
     if (try_internal_cmds(self, input))
       continue;
 
-    /*parse commands */
+    //Parse commands
     char ***commands = parse_line(input, &command_count,  
                                    &is_async, &has_pipe,
                                    &is_redirect, &redirect_path,
                                    "log", 3); // TODO: get log by arguments...
 
     self->executing_line = input;
-    /*execute commands */
+    //Execute commands
     loop_pipe(commands, is_redirect, redirect_path, self); 
-    /*free dynamics strings */ 
+    //Free dynamics strings 
     free_commands(commands, command_count);
     free(input);
   }
 }
+
+//Get the logger call string
 void Shell_get_logger_str(Shell *self, int is_err, int pid, int  code, char **cmd_args, char ***out) {
   char * str;
   int foo;
@@ -90,23 +94,22 @@ void Shell_configure(Shell *self, int argc, char **argv) {
   int result;
   
   ArgsHandler *args_handler = ArgsHandler_init(6);
-  /*print help and close the program */
+  //Print help and close the program
   ArgsHandler_insert_arguments(args_handler, Arg_init("-h", "--help", STRING(NULL), 
                                args_handler, 0, ArgsHandler_print)); 
-  /*set the Logger output file */
+  //Set the Logger output file
   ArgsHandler_insert_arguments(args_handler, Arg_init("-o", "--out-file", STRING(NULL), 
                                self->config, 1, ShellConfig_set_out_file)); 
-  /*set the Logger error file */
+  //Set the Logger error file
   ArgsHandler_insert_arguments(args_handler, Arg_init("-e", "--err-file", STRING(NULL), 
                                self->config, 1, ShellConfig_set_err_file)); 
-  /*set if the Logger have to print the return code of the processes*/
+  //Set if the Logger have to print the return code of the processe
   ArgsHandler_insert_arguments(args_handler, Arg_init("-c", "--code", STRING(NULL), 
                                self->config, 0, ShellConfig_enable_print_code)); 
-  /*set the max size in characters of the output of every process */
+  //Set the max size in characters of the output of every process
   ArgsHandler_insert_arguments(args_handler, Arg_init("-m", "--max-size", STRING(NULL), 
                                self, 1, set_output_max_size)); 
-  /*set the logger process executable path 
-  */
+  //Set the logger process executable path
   ArgsHandler_insert_arguments(args_handler, Arg_init("-l", "--logger-path", STRING(NULL), 
                                self->config, 1, ShellConfig_set_logger_path)); 
 
@@ -119,6 +122,7 @@ void Shell_configure(Shell *self, int argc, char **argv) {
   }
 }
 
+//Implementation of cd
 void Shell_cd(Shell *self, char *new_dir) {
   /*char cwd[1024];
   getcwd(cwd, sizeof(cwd));
@@ -155,6 +159,7 @@ void Shell_exit(Shell *self, int code) {
   exit(code);
 }
 
+//Manage the commands
 static int try_internal_cmds(Shell *self, char *command) {
   int retval;
   int count;
@@ -170,19 +175,17 @@ static int try_internal_cmds(Shell *self, char *command) {
     }
 
     splitted = Read_command(command, " ", &count);
-    /* horrible string matching */
+    //String matching
     if (strcmp(splitted[0], "cd") == 0) {
       retval = 1;
-      /*
-       cd takes only one argument
-      */
+      //cd takes only one argument
       if (count > 2) {
         Shell_print_error(self, "Error: cd takes only one argument", 0);
-        // an error in cd should not trigger other errors.
+        //An error in cd should not trigger other errors.
         retval = 1;
       }
       else if(count == 1) {
-        // case cd without parameters.
+        //Case cd without parameters.
         Shell_cd(self, NULL);     
       }
       else {
@@ -218,6 +221,7 @@ static void set_output_max_size(Shell *self, char *val) {
   ShellConfig_set_output_max_size(self->config, m_size);
 }
 
+//Ignore some char
 static char **split_ignoring_char(char *command, char delimiter, 
                                   char ignore) {
   char **retval = (char **)malloc(sizeof(char *)*strlen(command));
@@ -255,6 +259,8 @@ static char **split_ignoring_char(char *command, char delimiter,
   retval[index] = NULL;
   return retval;
 }
+
+//Read the command from the shell
 static char **Read_command(char *command, char *delimiter, int *count) {
   char *token;
   char *cmd;
@@ -272,7 +278,7 @@ static char **Read_command(char *command, char *delimiter, int *count) {
 
   retval = realloc(retval, sizeof(char *) * (i + 1));
   *count = i; 
-  /* array terminator */
+  //Array terminator
   retval[i] = NULL;
   return retval;
 }

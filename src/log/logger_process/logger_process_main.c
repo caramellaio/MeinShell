@@ -36,6 +36,7 @@ void set_output_max_size(void *logger_void, char *max_size){
   Logger_set_cmd_size(logger, output_max_size);
 }
 
+//Set if the code have to printed
 void enable_print_code(void *logger_void, char *foo) {
   Logger *logger = LOGGER(logger_void);
   Logger_enable_print_code(logger);
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+//Set the options for the logger
 void get_input_opts(int argc, char **argv, Logger *logger) {
   const int ARG_COUNT = 8;
   ArgsHandler *args_handler = ArgsHandler_init(ARG_COUNT);

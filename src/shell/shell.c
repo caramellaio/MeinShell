@@ -154,7 +154,7 @@ void Shell_kill_running_process(Shell *self) {
 
 void Shell_exit(Shell *self, int code) {
   Shell_kill_running_process(self);
-  printf("Shell exit with code: %d", code);
+  printf("Shell exit with code: %d\n", code);
   Shell_destroy(self);
   exit(code);
 }

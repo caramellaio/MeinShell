@@ -51,7 +51,7 @@ void ShellConfig_set_output_max_size(ShellConfig *self, int out_max_size) {
 
 //Get the string to pass to the logger
 void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, int code, 
-                                        char * input, char **command, char **out) {
+                                        char *input, char **command, char **out) {
   char *buffer;
   char *command_str;
   int out_size;
@@ -61,17 +61,39 @@ void ShellConfig_get_logger_call_string(ShellConfig *self, int is_err, int pid, 
 
   string_array_to_string(command, &command_str);
 
-  if (self->print_code) {
-    //String with the exit code
-    sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -C -c %d\0", 
-            self->logger_path, is_err ? self->err_file : self->out_file,
-            self->output_max_size, input, command_str, pid, code);
+  //const char *e_option = (is_err) ? "-e" : "";
+  //const char *print_code = (self->print_code) ? ("-C -c "+code) : "";
+  /*sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d %s %s\0", 
+              self->logger_path, (is_err ? self->err_file : self->out_file),
+              self->output_max_size, input, command_str, pid, e_option, print_code);*/
+
+  if(is_err) {
+    if (self->print_code) {
+      //String with the exit code and error
+      sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -e -C -c %d\0", 
+              self->logger_path, (is_err ? self->err_file : self->out_file),
+              self->output_max_size, input, command_str, pid, code);
+    }
+    else {
+      //String without the exit code but with error error
+      sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -e\0", 
+              self->logger_path, (is_err ? self->err_file : self->out_file),
+              self->output_max_size, input, command_str, pid);
+    }
   }
   else {
-    //String without the exit code
-    sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d\0", 
-            self->logger_path, is_err ? self->err_file : self->out_file,
-            self->output_max_size, input, command_str, pid);
+    if (self->print_code) {
+      //String with the exit code
+      sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d -C -c %d\0", 
+              self->logger_path, (is_err ? self->err_file : self->out_file),
+              self->output_max_size, input, command_str, pid, code);
+    }
+    else {
+      //String without the exit code
+      sprintf(buffer, "%s -o %s -m %d -n \"%s\" -s \"%s\" -p %d\0", 
+              self->logger_path, (is_err ? self->err_file : self->out_file),
+              self->output_max_size, input, command_str, pid);
+    }
   }
 
   out_size = get_str_size(buffer);

@@ -1,6 +1,10 @@
 #include "shell/shell.h"
 #include "signal.h"
 
+#define CYAN "\x1b[36m"
+#define YELLOW "\x1b[33m"
+#define RESET "\x1b[0m"
+
 Shell *shell;
 
 //Catch the interrupt signal
@@ -16,6 +20,10 @@ int main(int argc, char **argv) {
       fputs("An error occurred while setting a signal handler.\n", stderr);
       return 1;
   }
+
+  //Print presentation
+  printf(CYAN "\nINTERACTIVE SHELL:\n" RESET "\t- For exit use " YELLOW "\"quit\"" RESET " command\n\n");
+
 
   shell = Shell_init();
   Shell_configure(shell, argc, argv);

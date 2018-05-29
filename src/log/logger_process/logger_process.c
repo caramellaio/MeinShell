@@ -51,7 +51,7 @@ static void log_output(Logger *self, FILE *file) {
     char *str = (char*)malloc(value+1);
     strncpy(str, buffer, value);
     str[value+1]='\0';  
-    write(out_fd, str, value + 1);
+    write(out_fd, str, value);
     fprintf(file, "%s",str);
     free(str);
   }
